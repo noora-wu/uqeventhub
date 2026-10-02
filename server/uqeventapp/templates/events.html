@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+
+
+{% block title %}All events — UQ Event Hub{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css" />
+{% endblock %}
+
+{% block content %}
+<main class="container-xl px-3 py-4 py-md-5">
+    <nav aria-label="Breadcrumb" class="mb-3">
+      <ol class="breadcrumb mb-0 small">
+        <li class="breadcrumb-item"><a href="{% url 'index' %}">Discover</a></li>
+        <li class="breadcrumb-item active" aria-current="page">All events</li>
+      </ol>
+    </nav>
+    <header class="mb-4 pb-2 border-bottom">
+      <h1 class="h2 fw-bold mb-2">All events</h1>
+      <p class="text-secondary mb-0">Explore what is on across UQ, from talks and workshops to sport, culture, and
+        socials. Open an event for full details, times, and how to register.</p>
+    </header>
+    
+
+    <section class="mb-5" id="browse-by-date" aria-labelledby="uq-cal-heading">
+      <div
+        class="uq-cal-shell card border-0 shadow-lg overflow-hidden"
+        data-cal-year="{{ calendar_initial_year }}"
+        data-cal-month="{{ calendar_initial_month }}"
+      >
+        <div class="uq-cal-head d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 p-md-4 text-white">
+          <div>
+            <h2 id="uq-cal-heading" class="h4 fw-bold mb-1 d-flex align-items-center gap-2">
+              <i class="bi bi-calendar3-range" aria-hidden="true"></i>
+              Browse by date
+            </h2>
+            <p class="mb-0 small uq-cal-head-lead">Purple days jump straight to an event page. Soft highlights mark
+              catalogue dates, open the panel, then find the matching card below.</p>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-sm btn-light text-primary" id="uqCalPrev" aria-label="Previous month">
+              <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <div class="px-3 py-1 rounded-3 bg-white bg-opacity-10 small fw-semibold text-uppercase letter-spacing-1"
+              id="uqCalMonthLabel" aria-live="polite">{% now "F Y" %}</div>
+            <button type="button" class="btn btn-sm btn-light text-primary" id="uqCalNext" aria-label="Next month">
+              <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body p-2 p-md-4">
+          <div class="uq-cal-weekdays text-secondary small fw-semibold text-uppercase letter-spacing-1 mb-2"
+            aria-hidden="true">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+          <div class="uq-cal-grid" id="uqCalGrid" role="grid" aria-label="Event calendar by day"></div>
+        </div>
+        <div
+          class="card-footer bg-body-tertiary border-0 py-3 px-3 px-md-4 d-flex flex-wrap gap-3 align-items-center small text-secondary">
+          <span class="d-inline-flex align-items-center gap-2"><span class="uq-cal-legend uq-cal-legend--detail"
+              aria-hidden="true"></span> Event detail page</span>
+          <span class="d-inline-flex align-items-center gap-2"><span class="uq-cal-legend uq-cal-legend--listing"
+              aria-hidden="true"></span> Listing in catalogue</span>
+        </div>
+      </div>
+    </section>
+
+    <h2 class="h5 fw-bold mb-3" id="all-listings-heading">All listings</h2>
+    <form id="events-listings-filter-form" class="card shadow-sm border-0 mb-4" role="search"
+      aria-labelledby="events-listings-filter-heading" action="{% url 'events' %}" method="get" novalidate>
+      <div class="card-body p-3 p-md-4">
+        <h3 id="events-listings-filter-heading" class="visually-hidden">Search and filter listings</h3>
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-lg-4 col-xl-3">
+            <label for="events-filter-q" class="form-label small fw-semibold text-secondary mb-1">Search</label>
+            <div class="input-group input-group-lg shadow-sm">
+              <span class="input-group-text bg-white border-end-0" aria-hidden="true">
+                <svg class="icon text-secondary" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </span>
+              <input id="events-filter-q" name="q" type="search" class="form-control border-start-0"
+                placeholder="Search events…" autocomplete="off" value="{{ filter_values.q }}" />
+            </div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+            <label for="events-filter-location" class="form-label small fw-semibold text-secondary mb-1">Location</label>
+            <select id="events-filter-location" name="location" class="form-select form-select-lg shadow-sm"
+              aria-describedby="events-filter-location-hint">
+              <option value="" {% if not filter_values.location %}selected{% endif %}>All locations</option>
+              <option value="st-lucia" {% if filter_values.location == 'st-lucia' %}selected{% endif %}>St Lucia</option>
+              <option value="gatton" {% if filter_values.location == 'gatton' %}selected{% endif %}>Gatton</option>
+              <option value="herston" {% if filter_values.location == 'herston' %}selected{% endif %}>Herston</option>
+              <option value="online" {% if filter_values.location == 'online' %}selected{% endif %}>Online</option>
+              <option value="other" {% if filter_values.location == 'other' %}selected{% endif %}>Other</option>
+            </select>
+            <span id="events-filter-location-hint" class="visually-hidden">Filter by UQ campus or online events</span>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+            <label for="events-filter-category" class="form-label small fw-semibold text-secondary mb-1">Category</label>
+            <select id="events-filter-category" name="category" class="form-select form-select-lg shadow-sm">
+              <option value="">All</option>
+              {% for category_name, category_slug in filter_categories %}
+              <option value="{{ category_slug }}" {% if filter_values.category == category_slug %}selected{% endif %}>{{ category_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-12 col-md-4 col-lg-6 col-xl-3">
+            <label for="events-filter-dates" class="form-label small fw-semibold text-secondary mb-1">Date</label>
+            <div class="input-group input-group-lg shadow-sm">
+              <span class="input-group-text bg-white border-end-0" aria-hidden="true"><i
+                  class="bi bi-calendar-range text-secondary"></i></span>
+              <input id="events-filter-dates" name="dates" type="text" class="form-control border-start-0"
+                placeholder="Click to choose dates…" inputmode="none" readonly
+                aria-describedby="events-filter-dates-hint" value="{{ filter_values.dates }}" />
+            </div>
+            <span id="events-filter-dates-hint" class="visually-hidden">Optional date range filter</span>
+          </div>
+          <div class="col-12 col-lg-12 col-xl-2 text-xl-end">
+            <label class="form-label small fw-semibold text-secondary mb-1 d-none d-xl-block">&nbsp;</label>
+            <button type="submit" class="btn btn-lg btn-uq-gold w-100 px-xl-4 shadow-sm">Search</button>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div id="event-catalog">
+      <div class="row row-cols-1 row-cols-md-3 g-4 uq-catalog-page" data-catalog-page="1" id="uq-catalog-page-1">
+        {% for event in db_events %}
+        <div class="col">
+          <a href="{% url 'event_detail' event.id %}" class="card h-100 shadow-sm text-decoration-none text-reset">
+            <div class="position-relative">
+              <img class="card-img-top object-fit-cover" src="{{ event.hero_image_url|default:'https://picsum.photos/seed/event/800/400' }}" alt="{{ event.title }}"
+                width="800" height="240" style="height:12rem" referrerpolicy="no-referrer" />
+              <span class="position-absolute top-0 end-0 m-3 badge rounded-pill text-bg-light text-primary text-uppercase small">
+                {% if event.category %}{{ event.category.name }}{% else %}General{% endif %}
+              </span>
+              {% if event.cost_detail %}
+              <span class="position-absolute bottom-0 start-0 m-3 badge rounded-pill text-bg-warning text-dark small">{{ event.cost_detail }}</span>
+              {% endif %}
+            </div>
+            <div class="card-body">
+              <h2 class="card-title h5 fw-bold">{{ event.title }}</h2>
+              <p class="card-text text-secondary small">{{ event.tagline|default:event.description|truncatechars:110 }}</p>
+              <div class="d-flex align-items-center gap-1 text-secondary small">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                {% if event.is_online %}Online{% else %}{% if event.venue_display %}{{ event.venue_display }}{% elif event.venue %}{{ event.venue.name }}{% else %}TBA{% endif %}{% endif %}
+              </div>
+              <div class="text-secondary small mt-1">{{ event.start_at|date:"D d M Y H:i" }}</div>
+            </div>
+            <div class="card-footer bg-body-secondary d-flex justify-content-between align-items-center small text-secondary text-uppercase fw-semibold">
+              <span>{% if event.subscriber %}{{ event.subscriber.name }}{% else %}Unknown host{% endif %}</span>
+              <svg class="icon text-primary" viewBox="0 0 24 24" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </div>
+          </a>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="alert alert-secondary mb-0">No events in database yet. Run migrations and seed data.</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if events_page_obj.has_other_pages %}
+    <nav class="d-flex flex-column align-items-center gap-2 mt-4" aria-label="Event catalogue pages" id="uq-catalog-pagination">
+      <span class="small text-secondary" id="uq-catalog-page-status" aria-live="polite">Page {{ events_page_obj.number }} of {{ events_page_obj.paginator.num_pages }}</span>
+      <ul class="pagination mb-0">
+        <li class="page-item {% if not events_page_obj.has_previous %}disabled{% endif %}" id="uq-catalog-prev-li">
+          <a class="page-link rounded-start" href="?q={{ filter_values.q|urlencode }}&location={{ filter_values.location|urlencode }}&category={{ filter_values.category|urlencode }}&dates={{ filter_values.dates|urlencode }}&page={% if events_page_obj.has_previous %}{{ events_page_obj.previous_page_number }}{% else %}1{% endif %}" id="uq-catalog-prev" aria-label="Previous page">Previous</a>
+        </li>
+        {% for page_num in events_page_obj.paginator.page_range %}
+        <li class="page-item {% if page_num == events_page_obj.number %}active{% endif %}" {% if page_num == events_page_obj.number %}aria-current="page"{% endif %}>
+          <a class="page-link uq-catalog-page-link" href="?q={{ filter_values.q|urlencode }}&location={{ filter_values.location|urlencode }}&category={{ filter_values.category|urlencode }}&dates={{ filter_values.dates|urlencode }}&page={{ page_num }}">{{ page_num }}</a>
+        </li>
+        {% endfor %}
+        <li class="page-item {% if not events_page_obj.has_next %}disabled{% endif %}" id="uq-catalog-next-li">
+          <a class="page-link rounded-end" href="?q={{ filter_values.q|urlencode }}&location={{ filter_values.location|urlencode }}&category={{ filter_values.category|urlencode }}&dates={{ filter_values.dates|urlencode }}&page={% if events_page_obj.has_next %}{{ events_page_obj.next_page_number }}{% else %}{{ events_page_obj.paginator.num_pages }}{% endif %}" id="uq-catalog-next" aria-label="Next page">Next</a>
+        </li>
+      </ul>
+    </nav>
+    {% endif %}
+
+    <p class="small text-secondary text-center mt-5 mb-0">End of catalogue ·  <a href="#browse-by-date">Back to calendar</a></p>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="uqCalOffcanvas" aria-labelledby="uqCalOffcanvasLabel">
+      <div class="offcanvas-header border-bottom">
+        <h2 class="h5 offcanvas-title text-primary" id="uqCalOffcanvasLabel">Events on this day</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body" id="uqCalOffcanvasBody"></div>
+    </div>
+  </main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+{{ calendar_events|json_script:"uq-calendar-events-data" }}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var el = document.getElementById("events-filter-dates");
+      if (el && typeof flatpickr !== "undefined") {
+        flatpickr(el, {
+          mode: "range",
+          dateFormat: "Y-m-d",
+          showMonths: 1,
+          disableMobile: true,
+          allowInput: false,
+        });
+      }
+    });
+  </script>
+  <script src="{% static 'uqeventapp/js/events-calendar.js' %}?v=3"></script>
+{% endblock %}

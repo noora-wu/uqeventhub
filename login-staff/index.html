@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff sign in — UQ Event Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/uqeventhub/static/uqeventapp/css/theme.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <style>
+    .htmx-indicator { display: none; }
+    .htmx-request .htmx-indicator,
+    .htmx-request.htmx-indicator { display: inline-block; }
+  </style>
+  
+
+</head>
+
+
+<body class="bg-light uq-auth-page" hx-headers='{"X-CSRFToken": "hvWwfDhEeqsmaKNYu6FBOfGYlLBN1fosaF4kcUbxuUGiai483QgQEUUaVQWuZbo5"}'>
+<div class="alert alert-warning text-center rounded-0 mb-0 small" role="status">Static preview. Sign-in, registration, and the host dashboard need the Django app. The original MySQL database on UQ is no longer available.</div>
+  
+  <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm sticky-top" aria-label="Primary">
+    <div class="container-xl">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="/uqeventhub/">
+        <span class="brand-mark">
+          <i class="bi bi-calendar2-heart-fill text-primary fs-4" aria-hidden="true"></i>
+        </span>
+        UQ Event Hub
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain"
+        aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto align-items-md-center gap-md-2">
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/events/">Discover</a></li>
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/hosts/">Hosts</a></li>
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/login-staff/">Host login</a></li>
+          <li class="nav-item d-none d-md-block">
+            <div class="vr text-white-50 my-2"></div>
+          </li>
+          
+          
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/login-user/">Sign in</a></li>
+          
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  
+
+<main class="container-xl uq-auth-main">
+    <div class="card uq-auth-card shadow-none border-0">
+      <div class="card-header bg-primary text-white py-4 px-4">
+        <h1 class="h4 fw-bold mb-1">Host login</h1>
+        <p class="mb-0 small text-white-50">Use Google, GitHub, or your work email for the host portal.</p>
+      </div>
+      <div class="card-body p-4 p-md-5">
+        
+
+        <div class="d-grid gap-2 mb-2">
+          <a
+            class="btn btn-lg uq-auth-oauth uq-auth-oauth--google d-inline-flex align-items-center justify-content-center gap-2"
+            href="#?next=/uqeventhub/dashboard-events/"
+            aria-label="Continue with Google">
+            <i class="bi bi-google" aria-hidden="true"></i>
+            Continue with Google
+          </a>
+          <a
+            class="btn btn-lg uq-auth-oauth uq-auth-oauth--github d-inline-flex align-items-center justify-content-center gap-2"
+            href="#?next=/uqeventhub/dashboard-events/"
+            aria-label="Continue with GitHub">
+            <i class="bi bi-github" aria-hidden="true"></i>
+            Continue with GitHub
+          </a>
+        </div>
+
+        <div class="uq-auth-divider d-flex align-items-center gap-3 my-4" role="presentation" aria-hidden="true">
+          <hr class="flex-grow-1 m-0 opacity-25" />
+          <span class="small text-secondary text-uppercase fw-semibold letter-spacing-1">or</span>
+          <hr class="flex-grow-1 m-0 opacity-25" />
+        </div>
+
+        <form action="/uqeventhub/login-staff/" method="post" class="mb-0">
+          <input type="hidden" name="csrfmiddlewaretoken" value="hvWwfDhEeqsmaKNYu6FBOfGYlLBN1fosaF4kcUbxuUGiai483QgQEUUaVQWuZbo5">
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="staff-email">Work email</label>
+            <input class="form-control form-control-lg" id="staff-email" name="email" type="email"
+              autocomplete="username" placeholder="you@uq.edu.au" required />
+          </div>
+          <div class="mb-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-1">
+              <label class="form-label fw-semibold mb-0" for="staff-pass">Password</label>
+              <a class="small fw-semibold uq-auth-link" href="/uqeventhub/forgot-password/">Forgot password?</a>
+            </div>
+            <input class="form-control form-control-lg" id="staff-pass" name="password" type="password"
+              autocomplete="current-password" placeholder="••••••••" required />
+          </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-lg btn-uq-gold">Continue with email</button>
+            <a class="btn btn-lg btn-outline-secondary" href="/uqeventhub/">Browse without signing in</a>
+          </div>
+        </form>
+
+        <p class="small text-center mb-0 mt-4 uq-auth-footnote">
+          Need a host account?
+          <a href="/uqeventhub/register-host/" class="fw-semibold">Request organisation access</a>
+          ·
+          <a href="/uqeventhub/login-user/" class="fw-semibold">User sign in</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+
+  <footer class="bg-dark text-body-secondary py-5 mt-5">
+    <div class="container-xl">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="d-flex align-items-center gap-2 text-white fw-bold fs-5 mb-3">
+            <span class="brand-mark">
+              <i class="bi bi-calendar2-heart-fill text-primary fs-4" aria-hidden="true"></i>
+            </span>
+            UQ Event Hub
+          </div>
+          <p class="small text-white pe-md-5 mb-0">The official event management platform for the University of Queensland
+            community. Powered by students, for students.</p>
+        </div>
+        <div class="col-6 col-md-3">
+          <h2 class="text-warning text-uppercase small fw-bold letter-spacing-1 mb-3">Platform</h2>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="/uqeventhub/events/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Discover</a></li>
+            <li class="mb-2"><a href="/uqeventhub/hosts/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Hosts</a></li>
+            <li class="mb-2"><a href="/uqeventhub/login-staff/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Host login</a></li>
+            <li class="mb-2"><a href="/uqeventhub/login-user/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Sign in</a></li>
+            <li><a href="/uqeventhub/" class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Help Center</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-3">
+          <h2 class="text-warning text-uppercase small fw-bold letter-spacing-1 mb-3">Legal</h2>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="/uqeventhub/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Privacy Policy</a></li>
+            <li class="mb-2"><a href="/uqeventhub/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Terms of Service</a></li>
+            <li><a href="/uqeventhub/" class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Cookie
+                Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="border-secondary mt-4 mb-0" />
+      <p class="small text-center text-secondary mb-0 pt-4">© 2026 The University of Queensland. All rights reserved.
+      </p>
+    </div>
+  </footer>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.8"></script>
+  
+</body>
+</html>

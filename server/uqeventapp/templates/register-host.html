@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+
+
+{% block title %}Request host organisation — UQ Event Hub{% endblock %}
+
+{% block body_class %} uq-auth-page{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content %}
+<main class="container-xl uq-auth-main">
+    <div class="card uq-auth-card--wide shadow-none border-0">
+      <div class="card-header bg-primary text-white py-4 px-4">
+        <h1 class="h4 fw-bold mb-1">Request a host organisation</h1>
+        <p class="mb-0 small text-white-50">Apply to create a subscriber (tenant) for your union, school, or club. Submissions are reviewed before access is granted.</p>
+      </div>
+      <div class="card-body p-4 p-md-5">
+        {% include "partials/_messages_inline.html" %}
+        <form action="{% url 'register_host' %}" method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="org-name">Organisation name</label>
+            <input class="form-control form-control-lg" id="org-name" name="orgName" type="text" required
+              placeholder="e.g. UQ Union" autocomplete="organization" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="org-email">Official organisation email</label>
+            <input class="form-control form-control-lg" id="org-email" name="orgEmail" type="email" required
+              placeholder="events@yourorganisation.uq.edu.au" autocomplete="email" />
+            <p class="form-text small mb-0">Shared inbox or role account is fine; we use it to verify your group.</p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="org-desc">Short description</label>
+            <textarea class="form-control" id="org-desc" name="description" rows="4" maxlength="500" required
+              placeholder="What events will you run? Who is the audience? Any affiliation with UQ?"></textarea>
+            <p class="form-text small mb-0">Max 500 characters. This is saved with your host application for admin review.</p>
+          </div>
+          <hr class="my-4 opacity-25" />
+          <p class="small fw-semibold text-secondary text-uppercase letter-spacing-1 mb-3">Primary contact</p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="contact-fn">First name</label>
+              <input class="form-control form-control-lg" id="contact-fn" name="contactFirstName" type="text"
+                autocomplete="given-name" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="contact-ln">Last name</label>
+              <input class="form-control form-control-lg" id="contact-ln" name="contactLastName" type="text"
+                autocomplete="family-name" required />
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold" for="contact-email">Your work email</label>
+            <input class="form-control form-control-lg" id="contact-email" name="contactEmail" type="email" required
+              placeholder="you@uq.edu.au" autocomplete="email" />
+          </div>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="host-pass">Password</label>
+              <input class="form-control form-control-lg" id="host-pass" name="password" type="password" autocomplete="new-password" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="host-pass2">Confirm password</label>
+              <input class="form-control form-control-lg" id="host-pass2" name="password2" type="password" autocomplete="new-password" required />
+            </div>
+          </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-lg btn-uq-gold">Submit application</button>
+            <a class="btn btn-lg btn-outline-secondary" href="{% url 'login_staff' %}">Back to host sign in</a>
+          </div>
+        </form>
+        <p class="small text-center mb-0 mt-4 uq-auth-footnote">
+          Registering as a student instead?
+          <a href="{% url 'register_account' %}" class="fw-semibold">Create a personal account</a>
+        </p>
+      </div>
+    </div>
+  </main>
+{% endblock %}

@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+
+
+{% block title %}My registrations - UQ Event Hub{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content %}
+<main class="container-xl px-3 py-4 py-md-5">
+    {% include "partials/_messages_inline.html" %}
+    <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-md-between gap-3 mb-4">
+      <div>
+        <h1 class="h3 fw-bold mb-1">My registrations</h1>
+        <p class="text-secondary mb-0 small">Signed in as <strong class="text-body">{{ app_user.username|default:"Guest" }}</strong></p>
+      </div>
+      <a class="btn btn-outline-primary" href="{% url 'events' %}">Find more events</a>
+    </div>
+
+    <section class="mb-5" aria-labelledby="reg-upcoming-heading">
+      <h2 id="reg-upcoming-heading" class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
+        <i class="bi bi-calendar-check text-primary" aria-hidden="true"></i>
+        Registered - upcoming
+      </h2>
+      <div class="card shadow-sm border-0">
+        <div id="registrationApiAlert" class="alert d-none m-3 mb-0" role="alert"></div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">Event</th>
+                <th>When</th>
+                <th>Sessions / notes</th>
+                <th>Status</th>
+                <th class="pe-4 text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="uq-reg-upcoming-tbody">
+              {% for reg in upcoming_regs %}
+              <tr data-reg-id="{{ reg.id }}">
+                <td class="ps-4"><span class="fw-semibold text-body">{{ reg.event.title }}</span></td>
+                <td class="text-secondary small">{{ reg.event.start_at|date:"D d M Y" }}</td>
+                <td class="text-secondary small">
+                  {% for rs in reg.registration_sessions.all %}
+                    {{ rs.event_session.title }}{% if not forloop.last %} · {% endif %}
+                  {% empty %}
+                    {{ reg.event.time_summary|default:"General entry" }}
+                  {% endfor %}
+                </td>
+                <td class="uq-reg-status-cell"><span class="badge text-bg-success text-uppercase">{{ reg.status }}</span></td>
+                <td class="pe-4 text-end text-nowrap uq-reg-actions-cell">
+                  <form action="{% url 'cancel_registration' reg.id %}" method="post" class="d-inline uq-cancel-registration-form" data-registration-id="{{ reg.id }}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Cancel registration</button>
+                  </form>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td class="ps-4 text-muted small" colspan="5">No upcoming registrations found.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-4" aria-labelledby="reg-past-heading">
+      <h2 id="reg-past-heading" class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
+        <i class="bi bi-clock-history text-secondary" aria-hidden="true"></i>
+        Past events
+      </h2>
+      <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">Event</th>
+                <th>When</th>
+                <th>Sessions / notes</th>
+                <th>Status</th>
+                <th class="pe-4 text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for reg in past_regs %}
+              <tr>
+                <td class="ps-4"><span class="fw-semibold text-body">{{ reg.event.title }}</span></td>
+                <td class="text-secondary small">{{ reg.event.start_at|date:"D d M Y" }}</td>
+                <td class="text-secondary small">
+                  {% for rs in reg.registration_sessions.all %}
+                    {{ rs.event_session.title }}{% if not forloop.last %} · {% endif %}
+                  {% empty %}
+                    {{ reg.event.time_summary|default:"-" }}
+                  {% endfor %}
+                </td>
+                <td><span class="badge text-bg-secondary text-uppercase">{{ reg.status }}</span></td>
+                <td class="pe-4 text-end text-muted small">-</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td class="ps-4 text-muted small" colspan="5">No past registrations found.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-4" aria-labelledby="reg-cancelled-heading">
+      <h2 id="reg-cancelled-heading" class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
+        <i class="bi bi-x-circle text-danger" aria-hidden="true"></i>
+        Cancelled registrations
+      </h2>
+      <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">Event</th>
+                <th>When</th>
+                <th>Sessions / notes</th>
+                <th>Status</th>
+                <th class="pe-4 text-end">Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for reg in cancelled_regs %}
+              <tr>
+                <td class="ps-4"><span class="fw-semibold text-body">{{ reg.event.title }}</span></td>
+                <td class="text-secondary small">{{ reg.event.start_at|date:"D d M Y" }}</td>
+                <td class="text-secondary small">
+                  {% for rs in reg.registration_sessions.all %}
+                    {{ rs.event_session.title }}{% if not forloop.last %} · {% endif %}
+                  {% empty %}
+                    {{ reg.event.time_summary|default:"-" }}
+                  {% endfor %}
+                </td>
+                <td><span class="badge text-bg-secondary text-uppercase">{{ reg.status }}</span></td>
+                <td class="pe-4 text-end text-muted small">{{ reg.updated_at|date:"d M Y H:i" }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td class="ps-4 text-muted small" colspan="5">No cancelled registrations yet.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  (function () {
+    var alertEl = document.getElementById("registrationApiAlert");
+
+    function showAlert(message, ok) {
+      if (!alertEl) return;
+      alertEl.textContent = message;
+      alertEl.classList.remove("d-none", "alert-success", "alert-danger");
+      alertEl.classList.add(ok ? "alert-success" : "alert-danger");
+      setTimeout(function () { alertEl.classList.add("d-none"); }, 5000);
+    }
+
+    document.querySelectorAll(".uq-cancel-registration-form").forEach(function (form) {
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var id = form.getAttribute("data-registration-id");
+        var csrfInput = form.querySelector("input[name='csrfmiddlewaretoken']");
+        var csrf = csrfInput ? csrfInput.value : "";
+        fetch("/uqeventhub/api/registrations/" + id + "/cancel/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrf
+          },
+          body: "{}"
+        }).then(function (response) {
+          if (!response.ok) throw response;
+          return response.json();
+        }).then(function (registration) {
+          var row = document.querySelector('tr[data-reg-id="' + registration.id + '"]');
+          if (row) {
+            var statusCell = row.querySelector(".uq-reg-status-cell");
+            var actionsCell = row.querySelector(".uq-reg-actions-cell");
+            if (statusCell) statusCell.innerHTML = '<span class="badge text-bg-secondary text-uppercase">' + registration.status + "</span>";
+            if (actionsCell) {
+              actionsCell.className = "pe-4 text-end small text-muted";
+              actionsCell.textContent = "You cancelled this registration";
+            }
+            row.classList.add("table-light");
+          }
+          showAlert("Registration cancelled.", true);
+        }).catch(function () {
+          showAlert("Could not cancel registration.", false);
+        });
+      });
+    });
+  })();
+</script>
+{% endblock %}

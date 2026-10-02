@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load socialaccount %}
+
+
+
+{% block title %}Create account — UQ Event Hub{% endblock %}
+
+{% block body_class %} uq-auth-page{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content %}
+<main class="container-xl uq-auth-main">
+    <div class="card uq-auth-card shadow-none border-0">
+      <div class="card-header bg-primary text-white py-4 px-4">
+        <h1 class="h4 fw-bold mb-1">Create your account</h1>
+        <p class="mb-0 small text-white-50">Sign up with Google, GitHub, or email.</p>
+      </div>
+      <div class="card-body p-4 p-md-5">
+        {% include "partials/_messages_inline.html" %}
+        <div class="d-grid gap-2 mb-2">
+          <a
+            class="btn btn-lg uq-auth-oauth uq-auth-oauth--google d-inline-flex align-items-center justify-content-center gap-2"
+            href="{% provider_login_url 'google' process='login' %}" aria-label="Sign up with Google">
+            <i class="bi bi-google" aria-hidden="true"></i>
+            Sign up with Google
+          </a>
+          <a
+            class="btn btn-lg uq-auth-oauth uq-auth-oauth--github d-inline-flex align-items-center justify-content-center gap-2"
+            href="{% provider_login_url 'github' process='login' %}" aria-label="Sign up with GitHub">
+            <i class="bi bi-github" aria-hidden="true"></i>
+            Sign up with GitHub
+          </a>
+        </div>
+
+        <div class="uq-auth-divider d-flex align-items-center gap-3 my-4" role="presentation" aria-hidden="true">
+          <hr class="flex-grow-1 m-0 opacity-25" />
+          <span class="small text-secondary text-uppercase fw-semibold letter-spacing-1">or</span>
+          <hr class="flex-grow-1 m-0 opacity-25" />
+        </div>
+
+        <form action="{% url 'register_account' %}" method="post">
+          {% csrf_token %}
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold" for="reg-fn">First name</label>
+              <input class="form-control form-control-lg" id="reg-fn" name="firstName" type="text" autocomplete="given-name" required />
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold" for="reg-ln">Last name</label>
+              <input class="form-control form-control-lg" id="reg-ln" name="lastName" type="text" autocomplete="family-name" required />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="reg-email">UQ email</label>
+            <input class="form-control form-control-lg" id="reg-email" name="email" type="email" autocomplete="email" placeholder="student@uqconnect.edu.au" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="reg-pass">Password</label>
+            <input class="form-control form-control-lg" id="reg-pass" name="password" type="password" autocomplete="new-password" required />
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold" for="reg-pass2">Confirm password</label>
+            <input class="form-control form-control-lg" id="reg-pass2" name="password2" type="password" autocomplete="new-password" required />
+          </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-lg btn-uq-gold">Create account</button>
+            <a class="btn btn-lg btn-outline-secondary" href="{% url 'login_user' %}">Already have an account? Sign in</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+{% endblock %}
+
+{% block extra_scripts %}
+{% endblock %}

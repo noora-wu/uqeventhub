@@ -1,0 +1,34 @@
+{% if error %}
+<div class="alert alert-danger mb-0">{{ error }}</div>
+{% else %}
+  <div class="list-group">
+    {% for s in suggestions %}
+      <div class="list-group-item">
+        {% if s.title %}
+          <div class="fw-semibold mb-1">{{ s.title }}</div>
+        {% endif %}
+        {% if s.subtitle %}
+          <div class="small text-secondary mb-2">{{ s.subtitle }}</div>
+        {% endif %}
+        {% if s.body %}
+          <div class="small mb-2">{{ s.body }}</div>
+        {% endif %}
+        <form
+          hx-post="{{ apply_url }}"
+          hx-target="#{{ target_id }}"
+          hx-swap="innerHTML"
+          class="mb-0"
+        >
+          {% csrf_token %}
+          {% for k, v in s.hidden.items %}
+            <input type="hidden" name="{{ k }}" value="{{ v }}">
+          {% endfor %}
+          <button type="submit" class="btn btn-sm btn-uq-gold">Apply</button>
+        </form>
+      </div>
+    {% empty %}
+      <div class="list-group-item text-secondary small">No suggestions generated. Try again.</div>
+    {% endfor %}
+  </div>
+{% endif %}
+

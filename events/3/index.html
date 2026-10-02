@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global Minds Cultural Night - UQ Event Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/uqeventhub/static/uqeventapp/css/theme.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <style>
+    .htmx-indicator { display: none; }
+    .htmx-request .htmx-indicator,
+    .htmx-request.htmx-indicator { display: inline-block; }
+  </style>
+  
+</head>
+
+
+<body class="bg-light" hx-headers='{"X-CSRFToken": "73nKevnxkvEeVc5wS8yPVeVuQA4dyvzA0dvybMhqAZSaVKmGrS94LT9GqFpUwrzd"}'>
+<div class="alert alert-warning text-center rounded-0 mb-0 small" role="status">Static preview. Sign-in, registration, and the host dashboard need the Django app. The original MySQL database on UQ is no longer available.</div>
+  
+  <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm sticky-top" aria-label="Primary">
+    <div class="container-xl">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="/uqeventhub/">
+        <span class="brand-mark">
+          <i class="bi bi-calendar2-heart-fill text-primary fs-4" aria-hidden="true"></i>
+        </span>
+        UQ Event Hub
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain"
+        aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto align-items-md-center gap-md-2">
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/events/">Discover</a></li>
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/hosts/">Hosts</a></li>
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/login-staff/">Host login</a></li>
+          <li class="nav-item d-none d-md-block">
+            <div class="vr text-white-50 my-2"></div>
+          </li>
+          
+          
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/login-user/">Sign in</a></li>
+          
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  
+<main class="container-xl px-3 py-4 py-md-5">
+  <nav aria-label="Breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0 small">
+      <li class="breadcrumb-item"><a href="/uqeventhub/">Discover</a></li>
+      <li class="breadcrumb-item"><a href="/uqeventhub/events/">All events</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Global Minds Cultural Night</li>
+    </ol>
+  </nav>
+
+  <article class="uq-event-detail">
+    <div class="rounded-3 overflow-hidden shadow-sm">
+      <img
+        class="w-100 object-fit-cover"
+        src="https://picsum.photos/seed/culturalnight/1200/500"
+        alt="Global Minds Cultural Night"
+        width="1200"
+        style="max-height: 32rem; min-height: 20rem"
+        referrerpolicy="no-referrer"
+      />
+    </div>
+
+    <header class="pt-4 pb-3">
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <span class="badge rounded-pill uq-event-meta-badge--gold text-uppercase small">
+          Social
+        </span>
+        <span class="badge rounded-pill uq-event-meta-badge--purple">
+          UQ Union
+        </span>
+        
+        <span class="badge rounded-pill text-bg-warning text-dark">Free</span>
+        
+      </div>
+      <h1 class="fw-bold mb-2">Global Minds Cultural Night</h1>
+      <p class="lead text-secondary mb-0">Food stalls, performances, and DJ sets for the student community.</p>
+    </header>
+
+    <section class="uq-event-detail-meta border-top border-bottom py-4 bg-body-tertiary mb-4">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="small text-secondary text-uppercase fw-semibold mb-1">When</div>
+          <p class="mb-0 fw-semibold">Tuesday, 13 October 2026</p>
+          <p class="mb-0 small text-secondary">01:00AM - 04:00AM</p>
+        </div>
+        <div class="col-md-6">
+          <div class="small text-secondary text-uppercase fw-semibold mb-1">Where</div>
+          <p class="mb-0 fw-semibold">
+            
+              Great Court
+            
+          </p>
+          <p class="mb-0 small text-secondary">St Lucia</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pb-4 border-bottom mb-4">
+      <h2 class="h5 fw-bold mb-3">About</h2>
+      <p class="text-secondary mb-0">Food stalls, performances, and DJ sets for the student community.</p>
+    </section>
+
+    <section class="pb-4">
+      <h2 class="h5 fw-bold mb-3">Sessions</h2>
+      <form action="/uqeventhub/events/3/" method="post" class="mb-4">
+        <input type="hidden" name="csrfmiddlewaretoken" value="73nKevnxkvEeVc5wS8yPVeVuQA4dyvzA0dvybMhqAZSaVKmGrS94LT9GqFpUwrzd">
+      <div class="vstack gap-3">
+        
+        <div class="card border shadow-sm">
+          <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+              <span class="badge text-bg-primary"></span>
+              
+              <span class="small text-secondary">Great Court</span>
+              
+            </div>
+            <h3 class="h6 fw-bold mb-1">General admission</h3>
+            <p class="small text-secondary mb-0">Main session</p>
+            
+            <div class="form-check mt-3">
+              
+              <input class="form-check-input" type="checkbox" name="sessions" value="5" id="session-5"
+                aria-describedby="session-5-hint">
+              <label class="form-check-label small" for="session-5" id="session-5-hint">
+                Register for this session
+                
+                  <span class="text-secondary">(300 of 300 places left)</span>
+                
+              </label>
+              
+            </div>
+            
+          </div>
+        </div>
+        
+      </div>
+      <div class="d-flex flex-wrap gap-2 mt-3">
+        <button type="submit" class="btn btn-uq-gold">Register for event</button>
+        <a href="/uqeventhub/events/" class="btn btn-outline-secondary">Back to events</a>
+      </div>
+      </form>
+    </section>
+  </article>
+</main>
+
+
+  <footer class="bg-dark text-body-secondary py-5 mt-5">
+    <div class="container-xl">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="d-flex align-items-center gap-2 text-white fw-bold fs-5 mb-3">
+            <span class="brand-mark">
+              <i class="bi bi-calendar2-heart-fill text-primary fs-4" aria-hidden="true"></i>
+            </span>
+            UQ Event Hub
+          </div>
+          <p class="small text-white pe-md-5 mb-0">The official event management platform for the University of Queensland
+            community. Powered by students, for students.</p>
+        </div>
+        <div class="col-6 col-md-3">
+          <h2 class="text-warning text-uppercase small fw-bold letter-spacing-1 mb-3">Platform</h2>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="/uqeventhub/events/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Discover</a></li>
+            <li class="mb-2"><a href="/uqeventhub/hosts/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Hosts</a></li>
+            <li class="mb-2"><a href="/uqeventhub/login-staff/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Host login</a></li>
+            <li class="mb-2"><a href="/uqeventhub/login-user/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Sign in</a></li>
+            <li><a href="/uqeventhub/" class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Help Center</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-3">
+          <h2 class="text-warning text-uppercase small fw-bold letter-spacing-1 mb-3">Legal</h2>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="/uqeventhub/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Privacy Policy</a></li>
+            <li class="mb-2"><a href="/uqeventhub/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Terms of Service</a></li>
+            <li><a href="/uqeventhub/" class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Cookie
+                Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="border-secondary mt-4 mb-0" />
+      <p class="small text-center text-secondary mb-0 pt-4">© 2026 The University of Queensland. All rights reserved.
+      </p>
+    </div>
+  </footer>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.8"></script>
+  
+</body>
+</html>

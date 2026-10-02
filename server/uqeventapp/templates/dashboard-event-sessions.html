@@ -1,0 +1,439 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+
+
+{% block title %}Edit event — {{ dashboard_edit_event.title|default:"Event" }} — Staff Portal{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css" />
+{% endblock %}
+
+{% block site_shell %}
+<a class="d-lg-none btn btn-uq-gold w-100 rounded-0 py-2 small" href="{% url 'index' %}">← Back to public site</a>
+  <div class="d-flex min-vh-100 uq-staff-layout">
+    <aside class="uq-sidebar bg-primary text-white d-none d-lg-flex flex-column p-3 shadow-sm" aria-label="Staff navigation">
+      <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom border-light border-opacity-25">
+        <span class="brand-mark">
+          <svg class="icon" style="width:1.5rem;height:1.5rem;color:var(--bs-primary)" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        </span>
+        <span class="fw-bold fs-6">Staff Portal</span>
+      </div>
+      <nav class="nav flex-column gap-1 flex-grow-1 mb-4" aria-label="Staff sections">
+        <a href="{% url 'dashboard_events' %}" class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded-3 active" aria-current="page">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Events
+        </a>
+        <a href="{% url 'dashboard_organizations' %}" class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded-3">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>
+          Organizations
+        </a>
+        <a href="{% url 'dashboard_staff' %}" class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded-3">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Staff Management
+        </a>
+      </nav>
+      <div class="border-top border-light border-opacity-25 pt-3 mt-auto">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <img class="rounded-circle border border-2 border-warning" src="https://picsum.photos/seed/staff/40/40" alt="" width="40" height="40" referrerpolicy="no-referrer" />
+          <div class="small">
+            <div class="fw-bold text-white">{{ dashboard_current_user.username }}</div>
+            <div class="text-white-50">{{ dashboard_current_subscriber.name }} {{ dashboard_staff_membership.get_role_display }}</div>
+          </div>
+        </div>
+        <a class="nav-link px-3 py-2 text-white-50 small" href="{% url 'logout' %}">Logout</a>
+      </div>
+    </aside>
+
+    <main class="flex-grow-1 d-flex flex-column min-vh-100">
+      {% include "partials/_messages_inline.html" %}
+      <header class="bg-white border-bottom px-4 py-3 sticky-top uq-staff-page-header shadow-sm">
+        <nav aria-label="Breadcrumb" class="small mb-2">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard_events' %}" class="text-decoration-none">Events</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ dashboard_edit_event.title|default:"Event" }}</li>
+          </ol>
+        </nav>
+        <div class="d-flex flex-wrap align-items-center gap-2 gap-md-3">
+          <h1 class="h4 fw-bold mb-0">Edit event</h1>
+          <span class="badge rounded-pill {% if dashboard_edit_event.status == 'published' %}text-bg-success-subtle text-success{% else %}text-bg-warning-subtle text-warning-emphasis{% endif %}">{{ dashboard_edit_event.get_status_display }}</span>
+        </div>
+        <p class="small text-secondary mb-0 mt-2">Changes here are saved to the database and feed the public event page.</p>
+      </header>
+
+      <div class="flex-grow-1 bg-body-secondary">
+        <div class="container-xl py-4 px-3 px-lg-4 pb-5">
+        <form id="dashboard-event-edit-form" action="{% url 'dashboard_event_sessions' dashboard_edit_event.id %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row g-4 g-xl-5">
+            <div class="col-lg-9 col-xl-10">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+            <a class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2" href="{% url 'event_detail' dashboard_edit_event.id %}" target="_blank" rel="noopener noreferrer">
+              <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+              Open public page
+            </a>
+          </div>
+
+          <section class="bg-white rounded-3 shadow-sm p-4 p-lg-5 mb-4 uq-form-section-anchor" aria-labelledby="sec-listing">
+            <h2 id="sec-listing" class="h5 fw-bold mb-1 d-flex align-items-center gap-2">
+              <i class="bi bi-megaphone text-primary" aria-hidden="true"></i>
+              Title &amp; listing
+            </h2>
+            <p class="small text-secondary mb-4">Matches the hero: badges, title, and lead line on the event page.</p>
+            <div class="mb-3">
+              <label class="form-label fw-semibold" for="evt-title">Event title <span class="text-danger">*</span></label>
+              <input class="form-control" id="evt-title" name="title" type="text" required value="{{ dashboard_edit_event.title }}" autocomplete="off" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold" for="evt-lead">Tagline / lead sentence</label>
+              <input class="form-control" id="evt-lead" name="lead" type="text" value="{{ dashboard_edit_event.tagline }}" />
+            </div>
+            <div class="mb-0">
+              <button
+                type="button"
+                class="btn btn-outline-primary btn-sm"
+                hx-post="{% url 'ai_event_suggest_copy' dashboard_edit_event.id %}"
+                hx-target="#uq-ai-event-suggestions"
+                hx-swap="innerHTML"
+                hx-indicator="#uq-ai-event-spinner"
+              >
+                <i class="bi bi-stars" aria-hidden="true"></i>
+                Suggest copy with AI
+              </button>
+              <span id="uq-ai-event-spinner" class="htmx-indicator ms-2 small text-secondary">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Generating…
+              </span>
+              <div id="uq-ai-event-suggestions" class="mt-3"></div>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label class="form-label fw-semibold" for="evt-listing-type">Category</label>
+                <select class="form-select" id="evt-listing-type" name="listing_type">
+                  <option value="">All</option>
+                  <option value="social">Social &amp; Community</option>
+                  <option value="cultural">Cultural</option>
+                  <option value="clubs" selected>Clubs &amp; Societies</option>
+                  <option value="sports">Sports &amp; Fitness</option>
+                  <option value="food">Food &amp; Drink</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="academic">Academic &amp; Talks</option>
+                  <option value="workshop">Workshops &amp; Training</option>
+                  <option value="career">Careers &amp; Employability</option>
+                  <option value="orientation">Orientation &amp; Welcome</option>
+                  <option value="support">Student Support</option>
+                  <option value="volunteering">Volunteering</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold" for="evt-cost">Cost badge</label>
+                <select class="form-select" id="evt-cost" name="cost_badge">
+                  <option value="free" selected>Free</option>
+                  <option value="paid">Paid</option>
+                  <option value="from">From $…</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold" for="evt-cost-note">Cost detail <span class="text-secondary fw-normal small">(optional)</span></label>
+                <input class="form-control" id="evt-cost-note" name="cost_detail" type="text" placeholder="e.g. From $15 student" value="Free (see sessions)" />
+              </div>
+            </div>
+            <div class="mb-2">
+              <label class="form-label fw-semibold" for="evt-image-file">Hero image — replace upload</label>
+              <input class="form-control" id="evt-image-file" name="hero_image" type="file" accept="image/*" />
+              <p class="form-text mb-0">Current public page uses the file below via URL.</p>
+            </div>
+            <div class="mb-0">
+              <label class="form-label fw-semibold" for="evt-image">Image URL</label>
+              <input class="form-control font-monospace small" id="evt-image" name="image_url" type="url" inputmode="url" value="{{ dashboard_edit_event.hero_image_url }}" />
+            </div>
+          </section>
+
+          <section class="bg-white rounded-3 shadow-sm p-4 p-lg-5 mb-4 uq-form-section-anchor" aria-labelledby="sec-when">
+            <h2 id="sec-when" class="h5 fw-bold mb-1 d-flex align-items-center gap-2">
+              <i class="bi bi-calendar-event text-primary" aria-hidden="true"></i>
+              When
+            </h2>
+            <p class="small text-secondary mb-4">Shown under “When” on the public page.</p>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="evt-date">Main date</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0" aria-hidden="true"><i class="bi bi-calendar-range text-secondary"></i></span>
+                  <input class="form-control border-start-0" id="evt-date" name="event_date" type="text"
+                    value="{{ dashboard_edit_event.start_at|date:'Y-m-d' }}" placeholder="Click to choose date…" inputmode="none" readonly autocomplete="off" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="evt-time-summary">Time summary <span class="text-secondary fw-normal small">(shown to visitors)</span></label>
+              <input class="form-control" id="evt-time-summary" name="time_summary" type="text" value="{{ dashboard_edit_event.time_summary }}" />
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-white rounded-3 shadow-sm p-4 p-lg-5 mb-4 uq-form-section-anchor" aria-labelledby="sec-where">
+            <h2 id="sec-where" class="h5 fw-bold mb-1 d-flex align-items-center gap-2">
+              <i class="bi bi-geo-alt text-primary" aria-hidden="true"></i>
+              Where
+            </h2>
+            <p class="small text-secondary mb-4">Venue line and campus line under “Where”.</p>
+            <div class="mb-3">
+              <label class="form-label fw-semibold" for="evt-venue-primary">Venue</label>
+              <input class="form-control" id="evt-venue-primary" name="venue" type="text" value="{% if dashboard_edit_event.venue_display %}{{ dashboard_edit_event.venue_display }}{% elif dashboard_edit_event.venue %}{{ dashboard_edit_event.venue.name }}{% endif %}" />
+            </div>
+            <div class="mb-0">
+              <label class="form-label fw-semibold" for="evt-campus-line">Campus / area</label>
+              <select id="evt-campus-line" name="campus_line" class="form-select" aria-describedby="evt-campus-hint">
+                <option value="">All locations</option>
+                <option value="st-lucia" {% if dashboard_edit_event.campus == 'St Lucia' %}selected{% endif %}>St Lucia</option>
+                <option value="gatton">Gatton</option>
+                <option value="herston">Herston</option>
+                <option value="online" {% if dashboard_edit_event.is_online %}selected{% endif %}>Online</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </section>
+
+          <section class="bg-white rounded-3 shadow-sm p-4 p-lg-5 mb-4 uq-form-section-anchor" aria-labelledby="sec-about">
+            <h2 id="sec-about" class="h5 fw-bold mb-1 d-flex align-items-center gap-2">
+              <i class="bi bi-text-paragraph text-primary" aria-hidden="true"></i>
+              About
+            </h2>
+            <p class="small text-secondary mb-4">Long description and highlight bullets.</p>
+            <div class="mb-3">
+              <label class="form-label fw-semibold" for="evt-about">Full description</label>
+              <textarea class="form-control" id="evt-about" name="about" rows="8">{{ dashboard_edit_event.description }}</textarea>
+            </div>
+            <div class="mb-0">
+              <label class="form-label fw-semibold" for="evt-bullets">Highlight bullets <span class="text-secondary fw-normal small">(one per line)</span></label>
+              <textarea class="form-control" id="evt-bullets" name="bullets" rows="4">{{ dashboard_edit_event.highlight_bullets }}</textarea>
+            </div>
+          </section>
+
+          <section class="bg-white rounded-3 shadow-sm p-4 p-lg-5 mb-4 uq-form-section-anchor" aria-labelledby="sec-map">
+            <h2 id="sec-map" class="h5 fw-bold mb-1 d-flex align-items-center gap-2">
+              <i class="bi bi-map text-primary" aria-hidden="true"></i>
+              Getting there
+            </h2>
+            <p class="small text-secondary mb-4">Powers “Open in Google Maps” on the public page.</p>
+            <div class="mb-0">
+              <label class="form-label fw-semibold" for="evt-maps-url">Google Maps URL or search query link</label>
+              <input class="form-control font-monospace small" id="evt-maps-url" name="maps_url" type="url" value="{{ dashboard_edit_event.maps_url }}" />
+            </div>
+          </section>
+
+          <section class="bg-white rounded-3 shadow-sm p-4 p-lg-5 mb-4 uq-form-section-anchor" aria-labelledby="sec-sessions">
+            <h2 id="sec-sessions" class="h5 fw-bold mb-1 d-flex align-items-center gap-2">
+              <i class="bi bi-stars text-primary" aria-hidden="true"></i>
+              What’s on (same day)
+            </h2>
+            <p class="small text-secondary mb-4">These blocks match the session cards on the public page. Add, edit, or remove sessions here.</p>
+            <div class="mb-3">
+              <label class="form-label fw-semibold" for="evt-sessions-intro">Section intro</label>
+              <textarea class="form-control" id="evt-sessions-intro" name="sessions_intro" rows="2">{{ dashboard_edit_event.sessions_intro }}</textarea>
+            </div>
+            <div id="uq-session-list" class="vstack gap-3 mb-3">
+              {% for session in dashboard_edit_sessions %}
+              <div class="uq-session-block rounded-3 border bg-body-tertiary p-3 p-md-4" data-session-index="{{ forloop.counter }}">
+                <input type="hidden" name="session{{ forloop.counter }}_id" value="{{ session.id }}">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                  <p class="small fw-semibold text-body mb-0 uq-session-heading">Session {{ forloop.counter }}</p>
+                  <button type="button" class="btn btn-sm btn-outline-danger uq-session-remove {% if forloop.first %}d-none{% endif %}" aria-label="Remove this session">Remove</button>
+                </div>
+                <div class="row g-3 mb-3">
+                  <div class="col-md-4">
+                    <label class="form-label" for="s{{ forloop.counter }}-time">Time label</label>
+                    <input class="form-control" id="s{{ forloop.counter }}-time" name="session{{ forloop.counter }}_time" type="text" value="{{ session.time_label }}" />
+                  </div>
+                  <div class="col-md-8">
+                    <label class="form-label" for="s{{ forloop.counter }}-place">Location line</label>
+                    <input class="form-control" id="s{{ forloop.counter }}-place" name="session{{ forloop.counter }}_place" type="text" value="{{ session.location_label }}" />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="s{{ forloop.counter }}-title">Session title</label>
+                  <input class="form-control" id="s{{ forloop.counter }}-title" name="session{{ forloop.counter }}_title" type="text" value="{{ session.title }}" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="s{{ forloop.counter }}-desc">Short description</label>
+                  <textarea class="form-control" id="s{{ forloop.counter }}-desc" name="session{{ forloop.counter }}_desc" rows="2">{{ session.abstract }}</textarea>
+                </div>
+                <div class="row g-3 mb-0">
+                  <div class="col-md-6">
+                    <label class="form-label" for="s{{ forloop.counter }}-reg">Registration</label>
+                    <select class="form-select" id="s{{ forloop.counter }}-reg" name="session{{ forloop.counter }}_registration">
+                      <option value="none" {% if session.registration_kind == 'none' %}selected{% endif %}>No registration</option>
+                      <option value="ticketed" {% if session.registration_kind == 'ticketed' %}selected{% endif %}>Ticketed</option>
+                      <option value="limited" {% if session.registration_kind == 'limited' %}selected{% endif %}>Limited capacity</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label" for="s{{ forloop.counter }}-cap">Session capacity</label>
+                    <input class="form-control" id="s{{ forloop.counter }}-cap" name="session{{ forloop.counter }}_capacity" type="number" min="0" step="1" value="{{ session.capacity|default:'' }}" />
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+              <div class="uq-session-block rounded-3 border bg-body-tertiary p-3 p-md-4" data-session-index="1">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                  <p class="small fw-semibold text-body mb-0 uq-session-heading">Session 1</p>
+                  <button type="button" class="btn btn-sm btn-outline-danger uq-session-remove d-none" aria-label="Remove this session">Remove</button>
+                </div>
+                <input type="hidden" name="session1_id" value="">
+                <input class="form-control mb-3" name="session1_time" type="text" placeholder="Time label" />
+                <input class="form-control mb-3" name="session1_place" type="text" placeholder="Location line" />
+                <input class="form-control mb-3" name="session1_title" type="text" placeholder="Session title" />
+                <textarea class="form-control mb-3" name="session1_desc" rows="2" placeholder="Short description"></textarea>
+                <select class="form-select mb-3" name="session1_registration">
+                  <option value="none">No registration</option>
+                  <option value="ticketed">Ticketed</option>
+                  <option value="limited">Limited capacity</option>
+                </select>
+                <input class="form-control" name="session1_capacity" type="number" min="0" step="1" placeholder="Capacity" />
+              </div>
+              {% endfor %}
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2" id="uq-add-session">
+              <i class="bi bi-plus-lg" aria-hidden="true"></i>
+              Add another session
+            </button>
+          </section>
+
+          <section class="bg-white rounded-3 shadow-sm p-4 p-lg-5 mb-0 uq-form-section-anchor" aria-labelledby="sec-publish">
+            <h2 id="sec-publish" class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-cloud-upload text-primary" aria-hidden="true"></i>
+              Publication
+            </h2>
+            <div class="mb-0">
+              <label class="form-label fw-semibold" for="evt-status">Status</label>
+              <select class="form-select" id="evt-status" name="status" style="max-width: 16rem">
+                <option value="draft" {% if dashboard_edit_event.status == 'draft' %}selected{% endif %}>Draft</option>
+                <option value="published" {% if dashboard_edit_event.status == 'published' %}selected{% endif %}>Published (live)</option>
+                <option value="archived" {% if dashboard_edit_event.status == 'archived' %}selected{% endif %}>Archived (hidden from public)</option>
+                <option value="cancelled" {% if dashboard_edit_event.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+              </select>
+            </div>
+          </section>
+
+            </div>
+
+            <aside class="col-lg-3 col-xl-2 d-none d-lg-block" aria-label="Section navigation">
+              <div class="uq-create-event-toc">
+                <div class="bg-white rounded-3 shadow-sm p-2 p-xl-3 mb-3">
+                  <h3 class="h6 fw-bold text-secondary text-uppercase small mb-2 mb-xl-3 letter-spacing-1">On this page</h3>
+                  <nav class="nav flex-column gap-0 small" aria-label="Form sections">
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-listing">Title &amp; listing</a>
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-when">When</a>
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-where">Where</a>
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-about">About</a>
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-map">Getting there</a>
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-sessions">What’s on</a>
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-publish">Publication</a>
+                  </nav>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+        </form>
+
+          <div class="row mt-3">
+            <div class="col-12 col-lg-9 col-xl-10">
+              <div class="bg-white rounded-3 shadow-sm px-4 py-3 d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                <div class="d-flex flex-wrap gap-2">
+                <form action="{% url 'dashboard_event_archive' dashboard_edit_event.id %}" method="post" class="d-inline" onsubmit="return confirm('Archive this event? It will no longer appear on Discover / event listings.');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-warning">Archive event</button>
+                </form>
+                {% if dashboard_staff_membership.role == 'admin' %}
+                <form action="{% url 'dashboard_event_delete' dashboard_edit_event.id %}" method="post" class="d-inline" onsubmit="return confirm('Permanently delete this event? This cannot be undone.');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-danger">Delete event</button>
+                </form>
+                {% endif %}
+                </div>
+                <div class="d-flex flex-wrap gap-2 ms-auto">
+                <a href="{% url 'dashboard_events' %}" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" form="dashboard-event-edit-form" class="btn btn-uq-gold px-4">Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var dateEl = document.getElementById("evt-date");
+      if (dateEl && typeof flatpickr !== "undefined") {
+        flatpickr(dateEl, {
+          mode: "single",
+          dateFormat: "Y-m-d",
+          defaultDate: "2026-02-18",
+          showMonths: 1,
+          disableMobile: true,
+          allowInput: false,
+        });
+      }
+
+      var sessionList = document.getElementById("uq-session-list");
+      var addSessionBtn = document.getElementById("uq-add-session");
+      if (sessionList) {
+        function renumberSessions() {
+          var blocks = sessionList.querySelectorAll(".uq-session-block");
+          blocks.forEach(function (block, i) {
+            var n = i + 1;
+            block.dataset.sessionIndex = String(n);
+            var heading = block.querySelector(".uq-session-heading");
+            if (heading) heading.textContent = "Session " + n;
+            block.querySelectorAll("[id]").forEach(function (el) {
+              el.id = el.id.replace(/^s\d+-/, "s" + n + "-");
+            });
+            block.querySelectorAll("[name^='session']").forEach(function (el) {
+              el.name = el.name.replace(/^session\d+_/, "session" + n + "_");
+            });
+            block.querySelectorAll("label[for]").forEach(function (lab) {
+              var f = lab.getAttribute("for");
+              if (f) lab.setAttribute("for", f.replace(/^s\d+-/, "s" + n + "-"));
+            });
+            var rm = block.querySelector(".uq-session-remove");
+            if (rm) {
+              if (n === 1) rm.classList.add("d-none");
+              else rm.classList.remove("d-none");
+            }
+          });
+        }
+
+        sessionList.addEventListener("click", function (e) {
+          var btn = e.target.closest(".uq-session-remove");
+          if (!btn || !sessionList.contains(btn)) return;
+          var block = btn.closest(".uq-session-block");
+          if (!block || sessionList.querySelectorAll(".uq-session-block").length <= 1) return;
+          block.remove();
+          renumberSessions();
+        });
+        if (addSessionBtn) {
+          addSessionBtn.addEventListener("click", function () {
+            var proto = sessionList.querySelector(".uq-session-block");
+            if (!proto) return;
+            var clone = proto.cloneNode(true);
+            clone.querySelectorAll("input, textarea, select").forEach(function (el) {
+              if (el.tagName === "SELECT") el.selectedIndex = 0;
+              else el.value = "";
+            });
+            sessionList.appendChild(clone);
+            renumberSessions();
+          });
+        }
+      }
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ event.title }} - UQ Event Hub{% endblock %}
+
+{% block content %}
+<main class="container-xl px-3 py-4 py-md-5">
+  <nav aria-label="Breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0 small">
+      <li class="breadcrumb-item"><a href="{% url 'index' %}">Discover</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'events' %}">All events</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ event.title }}</li>
+    </ol>
+  </nav>
+
+  <article class="uq-event-detail">
+    <div class="rounded-3 overflow-hidden shadow-sm">
+      <img
+        class="w-100 object-fit-cover"
+        src="{{ event.hero_image_url|default:'https://picsum.photos/seed/eventdetail/1200/500' }}"
+        alt="{{ event.title }}"
+        width="1200"
+        style="max-height: 32rem; min-height: 20rem"
+        referrerpolicy="no-referrer"
+      />
+    </div>
+
+    <header class="pt-4 pb-3">
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <span class="badge rounded-pill uq-event-meta-badge--gold text-uppercase small">
+          {% if event.category %}{{ event.category.name }}{% else %}General{% endif %}
+        </span>
+        <span class="badge rounded-pill uq-event-meta-badge--purple">
+          {% if event.subscriber %}{{ event.subscriber.name }}{% else %}Unknown host{% endif %}
+        </span>
+        {% if event.cost_detail %}
+        <span class="badge rounded-pill text-bg-warning text-dark">{{ event.cost_detail }}</span>
+        {% elif event.cost_badge %}
+        <span class="badge rounded-pill text-bg-warning text-dark">{{ event.cost_badge|title }}</span>
+        {% endif %}
+      </div>
+      <h1 class="fw-bold mb-2">{{ event.title }}</h1>
+      <p class="lead text-secondary mb-0">{{ event.tagline|default:event.description|truncatechars:160 }}</p>
+    </header>
+
+    <section class="uq-event-detail-meta border-top border-bottom py-4 bg-body-tertiary mb-4">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="small text-secondary text-uppercase fw-semibold mb-1">When</div>
+          <p class="mb-0 fw-semibold">{{ event.start_at|date:"l, d F Y" }}</p>
+          <p class="mb-0 small text-secondary">{{ event.time_summary|default:"Time to be confirmed" }}</p>
+        </div>
+        <div class="col-md-6">
+          <div class="small text-secondary text-uppercase fw-semibold mb-1">Where</div>
+          <p class="mb-0 fw-semibold">
+            {% if event.is_online %}
+              Online
+            {% elif event.venue_display %}
+              {{ event.venue_display }}
+            {% elif event.venue %}
+              {{ event.venue.name }}
+            {% else %}
+              TBA
+            {% endif %}
+          </p>
+          <p class="mb-0 small text-secondary">{{ event.campus|default:"Campus TBA" }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pb-4 border-bottom mb-4">
+      <h2 class="h5 fw-bold mb-3">About</h2>
+      <p class="text-secondary mb-0">{{ event.description|linebreaksbr }}</p>
+    </section>
+
+    <section class="pb-4">
+      <h2 class="h5 fw-bold mb-3">Sessions</h2>
+      <form action="{% url 'event_detail' event.id %}" method="post" class="mb-4">
+        {% csrf_token %}
+      <div class="vstack gap-3">
+        {% for session in event_sessions %}
+        <div class="card border shadow-sm">
+          <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+              <span class="badge text-bg-primary">{{ session.time_label|default:session.start_at|date:"H:i" }}</span>
+              {% if session.location_label %}
+              <span class="small text-secondary">{{ session.location_label }}</span>
+              {% endif %}
+            </div>
+            <h3 class="h6 fw-bold mb-1">{{ session.title }}</h3>
+            <p class="small text-secondary mb-0">{{ session.abstract|default:"Session details to be confirmed." }}</p>
+            {% if session.registration_kind != 'none' %}
+            <div class="form-check mt-3">
+              {% if session.session_is_full %}
+              <input class="form-check-input" type="checkbox" value="{{ session.id }}" id="session-{{ session.id }}" disabled aria-disabled="true" aria-describedby="session-{{ session.id }}-status">
+              <label class="form-check-label small text-secondary" for="session-{{ session.id }}">
+                This session is full{% if session.capacity %} ({{ session.capacity }} places, all taken){% endif %}
+              </label>
+              <p id="session-{{ session.id }}-status" class="small text-danger mb-0 mt-1">No more places available.</p>
+              {% else %}
+              <input class="form-check-input" type="checkbox" name="sessions" value="{{ session.id }}" id="session-{{ session.id }}"
+                aria-describedby="session-{{ session.id }}-hint">
+              <label class="form-check-label small" for="session-{{ session.id }}" id="session-{{ session.id }}-hint">
+                Register for this session
+                {% if session.capacity %}
+                  <span class="text-secondary">({{ session.places_remaining }} of {{ session.capacity }} places left)</span>
+                {% else %}
+                  <span class="text-secondary">(open registration)</span>
+                {% endif %}
+              </label>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-secondary mb-0">No session details published yet.</div>
+        {% endfor %}
+      </div>
+      <div class="d-flex flex-wrap gap-2 mt-3">
+        <button type="submit" class="btn btn-uq-gold">Register for event</button>
+        <a href="{% url 'events' %}" class="btn btn-outline-secondary">Back to events</a>
+      </div>
+      </form>
+    </section>
+  </article>
+</main>
+{% endblock %}
+

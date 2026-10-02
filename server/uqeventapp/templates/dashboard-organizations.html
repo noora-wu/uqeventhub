@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+
+
+{% block title %}{% if dashboard_is_create %}Add organization{% else %}Edit organization{% endif %} — {{ dashboard_primary_subscriber.name|default:"Organization" }} — Staff Portal{% endblock %}
+
+{% block site_shell %}
+<a class="d-lg-none btn btn-uq-gold w-100 rounded-0 py-2 small" href="{% url 'index' %}">← Back to public site</a>
+  <nav class="d-lg-none bg-primary border-bottom border-light border-opacity-25" aria-label="Staff sections (mobile)">
+    <div class="d-flex flex-nowrap overflow-x-auto gap-1 px-2 py-2 uq-staff-mobile-nav">
+      <a href="{% url 'dashboard_events' %}" class="btn btn-sm btn-outline-light text-white flex-shrink-0">Events</a>
+      <a href="{% url 'dashboard_organizations' %}" class="btn btn-sm btn-light text-primary fw-semibold flex-shrink-0">Organizations</a>
+      <a href="{% url 'dashboard_staff' %}" class="btn btn-sm btn-outline-light text-white flex-shrink-0">Staff</a>
+    </div>
+  </nav>
+  <div class="d-flex min-vh-100 uq-staff-layout">
+    <aside class="uq-sidebar bg-primary text-white d-none d-lg-flex flex-column p-3 shadow-sm" aria-label="Staff navigation">
+      <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom border-light border-opacity-25">
+        <span class="brand-mark">
+          <svg class="icon" style="width:1.5rem;height:1.5rem;color:var(--bs-primary)" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        </span>
+        <span class="fw-bold fs-6">Staff Portal</span>
+      </div>
+      <nav class="nav flex-column gap-1 flex-grow-1 mb-4" aria-label="Staff sections">
+        <a href="{% url 'dashboard_events' %}" class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded-3">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Events
+        </a>
+        <a href="{% url 'dashboard_organizations' %}" class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded-3 active" aria-current="page">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>
+          Organizations
+        </a>
+        <a href="{% url 'dashboard_staff' %}" class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded-3">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Staff Management
+        </a>
+      </nav>
+      <div class="border-top border-light border-opacity-25 pt-3 mt-auto">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <img class="rounded-circle border border-2 border-warning" src="https://picsum.photos/seed/staff/40/40" alt="" width="40" height="40" referrerpolicy="no-referrer" />
+          <div class="small">
+          <div class="fw-bold text-white">{{ dashboard_current_user.username }}</div>
+          <div class="text-white-50">{{ dashboard_current_subscriber.name }} {{ dashboard_staff_membership.get_role_display }}</div>
+          </div>
+        </div>
+        <a class="nav-link px-3 py-2 text-white-50 small" href="{% url 'logout' %}">Logout</a>
+      </div>
+    </aside>
+
+    <main class="flex-grow-1 d-flex flex-column min-vh-100 min-w-0">
+      {% include "partials/_messages_inline.html" %}
+      <header class="bg-white border-bottom px-3 px-lg-4 py-3 sticky-top uq-staff-page-header shadow-sm">
+        <div class="d-flex flex-wrap align-items-center gap-2 gap-md-3 min-w-0">
+          <h1 class="h4 fw-bold mb-0 text-break">{% if dashboard_is_create %}Add organization{% else %}Edit organization{% endif %}</h1>
+          {% if dashboard_primary_subscriber %}
+          <span class="badge rounded-pill {% if dashboard_primary_subscriber.status == 'active' %}text-bg-success{% else %}text-bg-secondary{% endif %} flex-shrink-0">{{ dashboard_primary_subscriber.get_status_display }}</span>
+          {% endif %}
+        </div>
+      </header>
+
+      <div class="flex-grow-1 bg-body-secondary min-w-0">
+        <form action="{% if dashboard_is_create %}{% url 'dashboard_organization_create' %}{% elif dashboard_primary_subscriber %}{% url 'dashboard_organization_update' dashboard_primary_subscriber.id %}{% else %}{% url 'dashboard_organization_create' %}{% endif %}" method="post" class="container-xl py-3 py-lg-4 px-3 px-lg-4 pb-5">
+          {% csrf_token %}
+          <div class="row g-4 g-xl-5">
+            <div class="col-lg-9 col-xl-10">
+              <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 mb-4">
+                <a class="btn btn-outline-primary btn-sm d-inline-flex align-items-center justify-content-center gap-2 w-100 w-sm-auto" href="{% if dashboard_primary_subscriber %}{% url 'host_detail' dashboard_primary_subscriber.slug %}{% else %}{% url 'hosts' %}{% endif %}" target="_blank" rel="noopener noreferrer">
+                  <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                  Open public host profile
+                </a>
+                <a class="btn btn-uq-gold btn-sm d-inline-flex align-items-center justify-content-center gap-2 w-100 w-sm-auto" href="{% url 'dashboard_events' %}">
+                  <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                  Manage events
+                </a>
+              </div>
+
+              <section class="bg-white rounded-3 shadow-sm p-3 p-lg-5 mb-4 uq-form-section-anchor" aria-labelledby="sec-identity">
+                <h2 id="sec-identity" class="h5 fw-bold mb-1 d-flex align-items-center gap-2">
+                  <i class="bi bi-building text-primary" aria-hidden="true"></i>
+                  Name &amp; hero
+                </h2>
+                <p class="small text-secondary mb-4">Matches the host page header: name, lead paragraph, and avatar initial.</p>
+                <div class="row g-4 align-items-start mb-3">
+                  <div class="col-12 col-sm-auto">
+                    <label class="form-label fw-semibold" for="org-avatar">Avatar initial</label>
+                    <input class="form-control text-center fw-bold fs-4" id="org-avatar" name="avatar_initial" type="text" maxlength="2" value="{{ dashboard_primary_subscriber.name|slice:':1'|upper }}" style="width: 5.5rem; height: 5.5rem" autocomplete="off" title="Shown in the circle on the public profile" />
+                  </div>
+                  <div class="col min-w-0">
+                    <div class="row g-3 mb-3">
+                      <div class="col-md-6">
+                        <label class="form-label fw-semibold" for="org-name">Display name <span class="text-danger">*</span></label>
+                        <input class="form-control" id="org-name" name="display_name" type="text" required value="{{ dashboard_primary_subscriber.name }}" autocomplete="organization" />
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label fw-semibold" for="org-contact-email">Contact email <span class="text-danger">*</span></label>
+                        <input class="form-control font-monospace" id="org-contact-email" name="contact_email" type="email" required value="{{ dashboard_primary_subscriber.contact_email }}" autocomplete="email" />
+                      </div>
+                    </div>
+                    <div class="mb-0">
+                      <label class="form-label fw-semibold" for="org-lead">Lead paragraph</label>
+                      <textarea class="form-control" id="org-lead" name="lead" rows="3">{{ dashboard_primary_subscriber.tagline }}</textarea>
+                    </div>
+                    {% if dashboard_primary_subscriber %}
+                    <div class="mt-3">
+                      <button
+                        type="button"
+                        class="btn btn-outline-primary btn-sm"
+                        hx-post="{% url 'ai_subscriber_suggest_copy' dashboard_primary_subscriber.id %}"
+                        hx-target="#uq-ai-subscriber-suggestions"
+                        hx-swap="innerHTML"
+                        hx-indicator="#uq-ai-subscriber-spinner"
+                      >
+                        <i class="bi bi-stars" aria-hidden="true"></i>
+                        Suggest copy with AI
+                      </button>
+                      <span id="uq-ai-subscriber-spinner" class="htmx-indicator ms-2 small text-secondary">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Generating…
+                      </span>
+                      <div id="uq-ai-subscriber-suggestions" class="mt-3"></div>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </section>
+
+              <section class="bg-white rounded-3 shadow-sm p-3 p-lg-5 mb-4 uq-form-section-anchor" aria-labelledby="sec-tags">
+                <h2 id="sec-tags" class="h5 fw-bold mb-1 d-flex align-items-center gap-2">
+                  <i class="bi bi-tags text-primary" aria-hidden="true"></i>
+                  Tags &amp; website
+                </h2>
+                <p class="small text-secondary mb-4">Pills under the lead on the public host profile.</p>
+                <div class="row g-3 mb-3">
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold" for="org-campus">Campus / location tag</label>
+                    <input class="form-control" id="org-campus" name="tag_campus" type="text" value="{{ dashboard_primary_subscriber.tagline|default:'' }}" />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold" for="org-type">Organisation type tag</label>
+                    <input class="form-control" id="org-type" name="tag_org_type" type="text" value="Host organisation" />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold" for="org-website">Website label URL</label>
+                    <input class="form-control font-monospace small" id="org-website" name="website_url" type="url" value="{{ dashboard_primary_subscriber.website_url }}" />
+                  </div>
+                </div>
+                <div class="mb-0">
+                  <label class="form-label fw-semibold" for="org-website-label">Website link text <span class="text-secondary fw-normal small">(shown next to icon)</span></label>
+                  <input class="form-control" id="org-website-label" name="website_label" type="text" value="{{ dashboard_primary_subscriber.website_url|cut:'https://'|cut:'http://' }}" />
+                </div>
+              </section>
+
+              <section class="bg-white rounded-3 shadow-sm p-3 p-lg-5 mb-4 uq-form-section-anchor" aria-labelledby="sec-about">
+                <h2 id="sec-about" class="h5 fw-bold mb-1 d-flex align-items-center gap-2">
+                  <i class="bi bi-text-paragraph text-primary" aria-hidden="true"></i>
+                  About us
+                </h2>
+                <p class="small text-secondary mb-4">“About us” section on the public host page.</p>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold" for="org-about-1">First paragraph</label>
+                  <textarea class="form-control" id="org-about-1" name="about_paragraph_1" rows="4">{{ dashboard_primary_subscriber.description }}</textarea>
+                </div>
+                <div class="mb-0">
+                  <label class="form-label fw-semibold" for="org-about-2">Second paragraph</label>
+                  <textarea class="form-control" id="org-about-2" name="about_paragraph_2" rows="3">The event cards below are sample entries on UQ Event Hub. For live timetables, bookings, memberships such as Mates Rates, and the full event list, refer to uqu.com.au.</textarea>
+                </div>
+              </section>
+
+              <section class="bg-white rounded-3 shadow-sm p-3 p-lg-5 mb-4 uq-form-section-anchor" aria-labelledby="sec-channels">
+                <h2 id="sec-channels" class="h5 fw-bold mb-1 d-flex align-items-center gap-2">
+                  <i class="bi bi-link-45deg text-primary" aria-hidden="true"></i>
+                  Official channels
+                </h2>
+                <p class="small text-secondary mb-4">Sidebar links on the host profile (label + URL). Add or remove rows as needed.</p>
+                <div id="uq-channel-list" class="vstack gap-3 mb-3">
+                  {% for link in dashboard_official_links %}
+                  <div class="uq-channel-block border rounded-3 p-3 bg-body-tertiary" data-channel-index="1">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                      <span class="small fw-semibold text-body mb-0 uq-channel-heading">Link 1</span>
+                      <button type="button" class="btn btn-sm btn-outline-danger uq-channel-remove d-none" aria-label="Remove this link">Remove</button>
+                    </div>
+                    <div class="row g-2 align-items-end">
+                      <div class="col-md-5">
+                        <label class="form-label small mb-1" for="ch1-label">Label</label>
+                        <input class="form-control form-control-sm" id="ch1-label" name="channel1_label" type="text" value="{{ link.label }}" />
+                      </div>
+                      <div class="col-md-7">
+                        <label class="form-label small mb-1" for="ch1-url">URL</label>
+                        <input class="form-control form-control-sm font-monospace" id="ch1-url" name="channel1_url" type="url" value="{{ link.url }}" />
+                      </div>
+                    </div>
+                  </div>
+                  {% empty %}
+                  <div class="uq-channel-block border rounded-3 p-3 bg-body-tertiary" data-channel-index="1">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                      <span class="small fw-semibold text-body mb-0 uq-channel-heading">Link 2</span>
+                      <button type="button" class="btn btn-sm btn-outline-danger uq-channel-remove" aria-label="Remove this link">Remove</button>
+                    </div>
+                    <div class="row g-2 align-items-end">
+                      <div class="col-md-5">
+                        <label class="form-label small mb-1" for="ch2-label">Label</label>
+                        <input class="form-control form-control-sm" id="ch2-label" name="channel2_label" type="text" value="Clubs &amp; societies" />
+                      </div>
+                      <div class="col-md-7">
+                        <label class="form-label small mb-1" for="ch2-url">URL</label>
+                        <input class="form-control form-control-sm font-monospace" id="ch2-url" name="channel2_url" type="url" value="https://www.uqu.com.au/clubs-and-societies" />
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2" id="uq-add-channel">
+                  <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                  Add another link
+                </button>
+              </section>
+
+              <section class="bg-white rounded-3 shadow-sm p-3 p-lg-5 mb-0 uq-form-section-anchor" aria-labelledby="sec-publish">
+                <h2 id="sec-publish" class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
+                  <i class="bi bi-cloud-upload text-primary" aria-hidden="true"></i>
+                  Publication
+                </h2>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                  <label class="form-label fw-semibold" for="org-plan">Plan</label>
+                    <input class="form-control" id="org-plan" type="text" value="Standard" readonly disabled />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold" for="org-status">Host profile status</label>
+                    <select class="form-select" id="org-status" name="host_status" style="max-width: 100%">
+                      <option value="draft" {% if dashboard_primary_subscriber.status == 'suspended' %}selected{% endif %}>Hidden / draft</option>
+                      <option value="published" {% if not dashboard_primary_subscriber or dashboard_primary_subscriber.status == 'active' %}selected{% endif %}>Published (visible on Hosts)</option>
+                    </select>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <aside class="col-lg-3 col-xl-2 d-none d-lg-block" aria-label="Section navigation">
+              <div class="uq-create-event-toc">
+                <div class="bg-white rounded-3 shadow-sm p-2 p-xl-3 mb-3">
+                  <h3 class="h6 fw-bold text-secondary text-uppercase small mb-2 mb-xl-3 letter-spacing-1">On this page</h3>
+                  <nav class="nav flex-column gap-0 small" aria-label="Form sections">
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-identity">Name &amp; hero</a>
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-tags">Tags &amp; website</a>
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-about">About us</a>
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-channels">Official channels</a>
+                    <a class="uq-toc-link py-1 px-1 px-xl-2 rounded-2" href="#sec-publish">Publication</a>
+                  </nav>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-12 col-lg-9 col-xl-10">
+              <div class="bg-white rounded-3 shadow-sm px-3 px-lg-4 py-3 d-flex flex-column flex-sm-row flex-wrap gap-2 justify-content-stretch justify-content-sm-end align-items-stretch align-items-sm-center">
+                <a href="{% url 'dashboard_organizations' %}" class="btn btn-outline-secondary w-100 w-sm-auto">Cancel</a>
+                <button type="submit" class="btn btn-uq-gold px-4 w-100 w-sm-auto">{% if dashboard_is_create %}Create subscriber{% else %}Save changes{% endif %}</button>
+              </div>
+            </div>
+          </div>
+        </form>
+        {% if dashboard_primary_subscriber and not dashboard_is_create %}
+        <div class="container-xl px-3 px-lg-4 pb-5">
+          <div class="col-12 col-lg-9 col-xl-10">
+            <form action="{% url 'dashboard_organization_delete' dashboard_primary_subscriber.id %}" method="post" class="bg-white rounded-3 shadow-sm p-3 p-lg-4 border border-danger-subtle" onsubmit="return confirm('Archive {{ dashboard_primary_subscriber.name|escapejs }}? This will hide it from public host lists and keep historical data.');">
+              {% csrf_token %}
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                  <h2 class="h6 fw-bold text-danger mb-1">Archive subscriber</h2>
+                  <p class="small text-secondary mb-0">Mark this organization as suspended to hide it from public host lists while preserving data.</p>
+                </div>
+                <button type="submit" class="btn btn-outline-danger">Archive {{ dashboard_primary_subscriber.name }}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </main>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var list = document.getElementById("uq-channel-list");
+      var addBtn = document.getElementById("uq-add-channel");
+      if (!list || !addBtn) return;
+
+      function renumberChannels() {
+        var blocks = list.querySelectorAll(".uq-channel-block");
+        blocks.forEach(function (block, i) {
+          var n = i + 1;
+          block.dataset.channelIndex = String(n);
+          var heading = block.querySelector(".uq-channel-heading");
+          if (heading) heading.textContent = "Link " + n;
+          block.querySelectorAll("[id]").forEach(function (el) {
+            el.id = el.id.replace(/^ch\d+-/, "ch" + n + "-");
+          });
+          block.querySelectorAll("[name]").forEach(function (el) {
+            if (/^channel\d+_/.test(el.name)) {
+              el.name = el.name.replace(/^channel\d+_/, "channel" + n + "_");
+            }
+          });
+          block.querySelectorAll("label[for]").forEach(function (lab) {
+            var f = lab.getAttribute("for");
+            if (f) lab.setAttribute("for", f.replace(/^ch\d+-/, "ch" + n + "-"));
+          });
+          var rm = block.querySelector(".uq-channel-remove");
+          if (rm) {
+            if (n === 1) rm.classList.add("d-none");
+            else rm.classList.remove("d-none");
+          }
+        });
+      }
+
+      addBtn.addEventListener("click", function () {
+        var proto = list.querySelector(".uq-channel-block");
+        if (!proto) return;
+        var clone = proto.cloneNode(true);
+        clone.querySelectorAll("input").forEach(function (el) {
+          el.value = "";
+        });
+        list.appendChild(clone);
+        renumberChannels();
+      });
+
+      list.addEventListener("click", function (e) {
+        var btn = e.target.closest(".uq-channel-remove");
+        if (!btn || !list.contains(btn)) return;
+        var block = btn.closest(".uq-channel-block");
+        if (!block || list.querySelectorAll(".uq-channel-block").length <= 1) return;
+        block.remove();
+        renumberChannels();
+      });
+    });
+  </script>
+{% endblock %}

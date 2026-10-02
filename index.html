@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discover - UQ Event Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/uqeventhub/static/uqeventapp/css/theme.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <style>
+    .htmx-indicator { display: none; }
+    .htmx-request .htmx-indicator,
+    .htmx-request.htmx-indicator { display: inline-block; }
+  </style>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css" />
+
+</head>
+
+
+<body class="bg-light" hx-headers='{"X-CSRFToken": "OMotARQtnzL5tB22TKDqGofbq7VJ9Fz5HWwhx8KmD3Z1t9jcsueFw3tn0cgq7BzI"}'>
+<div class="alert alert-warning text-center rounded-0 mb-0 small" role="status">Static preview. Sign-in, registration, and the host dashboard need the Django app. The original MySQL database on UQ is no longer available.</div>
+  
+  <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm sticky-top" aria-label="Primary">
+    <div class="container-xl">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="/uqeventhub/">
+        <span class="brand-mark">
+          <i class="bi bi-calendar2-heart-fill text-primary fs-4" aria-hidden="true"></i>
+        </span>
+        UQ Event Hub
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain"
+        aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto align-items-md-center gap-md-2">
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/events/">Discover</a></li>
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/hosts/">Hosts</a></li>
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/login-staff/">Host login</a></li>
+          <li class="nav-item d-none d-md-block">
+            <div class="vr text-white-50 my-2"></div>
+          </li>
+          
+          
+          <li class="nav-item"><a class="nav-link" href="/uqeventhub/login-user/">Sign in</a></li>
+          
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  
+<main>
+    <section class="uq-hero position-relative text-white overflow-hidden shadow mb-2 mb-md-3" aria-labelledby="uq-hero-title">
+      <div class="uq-hero__media" aria-hidden="true">
+        <iframe class="uq-hero__iframe"
+          src="https://www.youtube.com/embed/UEwCBL4aqf8?autoplay=1&amp;mute=1&amp;controls=0&amp;rel=0&amp;loop=1&amp;playlist=UEwCBL4aqf8&amp;playsinline=1&amp;modestbranding=1&amp;iv_load_policy=3&amp;disablekb=1"
+          title="Decorative campus background video (muted, looping)" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+      <div class="uq-hero__scrim" aria-hidden="true"></div>
+      <div class="uq-hero__grid" aria-hidden="true"></div>
+
+      <div class="container-xl position-relative uq-hero__inner">
+        <div class="row justify-content-lg-between align-items-end g-4">
+          <div class="col-lg-8 col-xl-7">
+            <p class="mb-3">
+              <span class="badge rounded-pill px-3 py-2 fw-semibold uq-hero__eyebrow">
+                <i class="bi bi-geo-alt-fill me-1" aria-hidden="true"></i>UQ
+              </span>
+            </p>
+            <h1 id="uq-hero-title" class="display-4 fw-bold text-white mb-3 uq-hero__title">
+              Discover What's On
+            </h1>
+            <p class="fs-5 fw-normal text-white uq-hero__lead mb-4">
+              Find the latest seminars, social gatherings, and sporting events across UQ campuses, one place to browse, register, and stay in the loop.
+            </p>
+          </div>
+        </div>
+        <p class="small text-white-50 mt-4 mb-0 uq-hero__credit">
+          Background video:
+          <a class="link-light link-offset-2 link-underline-opacity-50 link-underline-opacity-100-hover" href="https://www.youtube.com/watch?v=UEwCBL4aqf8">YouTube</a>
+        </p>
+      </div>
+    </section>
+
+    <div class="container-xl px-3 pt-2 pt-md-3 pb-4 pb-md-5">
+      <form id="discover-filter-form" class="card shadow-sm border-0 mb-4" role="search"
+        aria-labelledby="filter-heading" action="/uqeventhub/" method="get" novalidate>
+        <div class="card-body p-3 p-md-4">
+          <h2 id="filter-heading" class="visually-hidden">Search and filter events</h2>
+          <div class="row g-3 align-items-end">
+            <div class="col-12 col-lg-4 col-xl-3">
+              <label for="filter-q" class="form-label small fw-semibold text-secondary mb-1">Search</label>
+              <div class="input-group input-group-lg shadow-sm">
+                <span class="input-group-text bg-white border-end-0" aria-hidden="true">
+                  <svg class="icon text-secondary" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </span>
+                <input id="filter-q" name="q" type="search" class="form-control border-start-0"
+                  placeholder="Search events…" autocomplete="off" value="" />
+              </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+              <label for="filter-location" class="form-label small fw-semibold text-secondary mb-1">Location</label>
+              <select id="filter-location" name="location" class="form-select form-select-lg shadow-sm"
+                aria-describedby="filter-location-hint">
+                <option value="" selected>All locations</option>
+                <option value="st-lucia" >St Lucia</option>
+                <option value="gatton" >Gatton</option>
+                <option value="herston" >Herston</option>
+                <option value="online" >Online</option>
+                <option value="other" >Other</option>
+              </select>
+              <span id="filter-location-hint" class="visually-hidden">Filter by UQ campus or online events</span>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+              <label for="filter-category" class="form-label small fw-semibold text-secondary mb-1">Category</label>
+              <select id="filter-category" name="category" class="form-select form-select-lg shadow-sm">
+                <option value="">All</option>
+                
+                <option value="academic" >Academic</option>
+                
+                <option value="careers" >Careers</option>
+                
+                <option value="social" >Social</option>
+                
+                <option value="sport" >Sport</option>
+                
+              </select>
+            </div>
+            <div class="col-12 col-md-4 col-lg-6 col-xl-3">
+              <label for="filter-dates" class="form-label small fw-semibold text-secondary mb-1">Date</label>
+              <div class="input-group input-group-lg shadow-sm">
+                <span class="input-group-text bg-white border-end-0" aria-hidden="true"><i
+                    class="bi bi-calendar-range text-secondary"></i></span>
+                <input id="filter-dates" name="dates" type="text" class="form-control border-start-0"
+                  placeholder="Click to choose dates…" inputmode="none" readonly
+                  aria-describedby="filter-dates-hint" value="" />
+              </div>
+            </div>
+            <div class="col-12 col-lg-12 col-xl-2 text-xl-end">
+              <label class="form-label small fw-semibold text-secondary mb-1 d-none d-xl-block">&nbsp;</label>
+              <button type="submit" class="btn btn-lg btn-uq-gold w-100 px-xl-4 shadow-sm">Search</button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <section class="uq-planned-panel rounded-3 p-3 p-md-4 mb-4" aria-labelledby="uq-reco-heading">
+        <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-3">
+          <div>
+            <h2 id="uq-reco-heading" class="h5 fw-bold mb-1 d-flex align-items-center gap-2 flex-wrap">
+              <i class="bi bi-stars text-primary" aria-hidden="true"></i>
+              Recommended for you
+              <span class="badge rounded-pill text-bg-secondary fw-normal">AI powered</span>
+            </h2>
+            <p class="text-secondary small mb-0">
+              Personalised suggestions based on your registrations and upcoming events.
+            </p>
+          </div>
+        </div>
+        <div
+          id="uq-ai-index-recs"
+          hx-post="/uqeventhub/ai/recommendations/"
+          hx-trigger="load"
+          hx-swap="innerHTML"
+          hx-indicator="#uq-ai-index-spinner"
+        >
+          <div id="uq-ai-index-spinner" class="htmx-indicator small text-secondary">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Generating recommendations…
+          </div>
+        </div>
+      </section>
+
+      <h2 class="h5 fw-bold mb-4" id="upcoming-events">Upcoming events</h2>
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+      
+      <div class="col">
+        <a href="/uqeventhub/events/2/" class="card h-100 shadow-sm text-decoration-none text-reset">
+          <div class="position-relative">
+            <img class="card-img-top object-fit-cover" src="https://picsum.photos/seed/marketday/1200/500"
+              alt="Market Day 2026" width="800" height="240" style="height:12rem" referrerpolicy="no-referrer" />
+            <span class="position-absolute top-0 end-0 m-3 badge rounded-pill text-bg-light text-primary text-uppercase small">Social</span>
+          </div>
+          <div class="card-body">
+            <h2 class="card-title h5 fw-bold">Market Day 2026</h2>
+            <p class="card-text text-secondary small">The biggest day on campus with clubs, societies, and freebies.</p>
+            <div class="d-flex align-items-center gap-1 text-secondary small">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              Great Court
+            </div>
+          </div>
+          <div class="card-footer bg-body-secondary d-flex justify-content-between align-items-center small text-secondary text-uppercase fw-semibold">
+            <span>UQ Union</span>
+            <svg class="icon text-primary" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+          </div>
+        </a>
+      </div>
+      
+      <div class="col">
+        <a href="/uqeventhub/events/1/" class="card h-100 shadow-sm text-decoration-none text-reset">
+          <div class="position-relative">
+            <img class="card-img-top object-fit-cover" src="https://picsum.photos/seed/careerexpo/1200/500"
+              alt="Careers &amp; Internships Expo 2026" width="800" height="240" style="height:12rem" referrerpolicy="no-referrer" />
+            <span class="position-absolute top-0 end-0 m-3 badge rounded-pill text-bg-light text-primary text-uppercase small">Careers</span>
+          </div>
+          <div class="card-body">
+            <h2 class="card-title h5 fw-bold">Careers &amp; Internships Expo 2026</h2>
+            <p class="card-text text-secondary small">Meet top employers on campus</p>
+            <div class="d-flex align-items-center gap-1 text-secondary small">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              Great Court
+            </div>
+          </div>
+          <div class="card-footer bg-body-secondary d-flex justify-content-between align-items-center small text-secondary text-uppercase fw-semibold">
+            <span>UQ Union</span>
+            <svg class="icon text-primary" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+          </div>
+        </a>
+      </div>
+      
+      <div class="col">
+        <a href="/uqeventhub/events/3/" class="card h-100 shadow-sm text-decoration-none text-reset">
+          <div class="position-relative">
+            <img class="card-img-top object-fit-cover" src="https://picsum.photos/seed/culturalnight/1200/500"
+              alt="Global Minds Cultural Night" width="800" height="240" style="height:12rem" referrerpolicy="no-referrer" />
+            <span class="position-absolute top-0 end-0 m-3 badge rounded-pill text-bg-light text-primary text-uppercase small">Social</span>
+          </div>
+          <div class="card-body">
+            <h2 class="card-title h5 fw-bold">Global Minds Cultural Night</h2>
+            <p class="card-text text-secondary small">Food stalls, performances, and DJ sets for the student community.</p>
+            <div class="d-flex align-items-center gap-1 text-secondary small">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              Great Court
+            </div>
+          </div>
+          <div class="card-footer bg-body-secondary d-flex justify-content-between align-items-center small text-secondary text-uppercase fw-semibold">
+            <span>UQ Union</span>
+            <svg class="icon text-primary" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+          </div>
+        </a>
+      </div>
+      
+      <div class="col">
+        <a href="/uqeventhub/events/4/" class="card h-100 shadow-sm text-decoration-none text-reset">
+          <div class="position-relative">
+            <img class="card-img-top object-fit-cover" src="https://picsum.photos/seed/rowingopen/1200/500"
+              alt="Rowing Regatta Open Day" width="800" height="240" style="height:12rem" referrerpolicy="no-referrer" />
+            <span class="position-absolute top-0 end-0 m-3 badge rounded-pill text-bg-light text-primary text-uppercase small">Sport</span>
+          </div>
+          <div class="card-body">
+            <h2 class="card-title h5 fw-bold">Rowing Regatta Open Day</h2>
+            <p class="card-text text-secondary small">Try an erg challenge and meet the UQ Boat Club squad.</p>
+            <div class="d-flex align-items-center gap-1 text-secondary small">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              St Lucia Boat Club
+            </div>
+          </div>
+          <div class="card-footer bg-body-secondary d-flex justify-content-between align-items-center small text-secondary text-uppercase fw-semibold">
+            <span>UQ Union</span>
+            <svg class="icon text-primary" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+          </div>
+        </a>
+      </div>
+      
+      <div class="col">
+        <a href="/uqeventhub/events/5/" class="card h-100 shadow-sm text-decoration-none text-reset">
+          <div class="position-relative">
+            <img class="card-img-top object-fit-cover" src="https://picsum.photos/seed/climatelecture/1200/500"
+              alt="Public Lecture: Climate Futures" width="800" height="240" style="height:12rem" referrerpolicy="no-referrer" />
+            <span class="position-absolute top-0 end-0 m-3 badge rounded-pill text-bg-light text-primary text-uppercase small">Academic</span>
+          </div>
+          <div class="card-body">
+            <h2 class="card-title h5 fw-bold">Public Lecture: Climate Futures</h2>
+            <p class="card-text text-secondary small">Leading researchers discuss adaptation and resilience.</p>
+            <div class="d-flex align-items-center gap-1 text-secondary small">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              Online
+            </div>
+          </div>
+          <div class="card-footer bg-body-secondary d-flex justify-content-between align-items-center small text-secondary text-uppercase fw-semibold">
+            <span>UQ Union</span>
+            <svg class="icon text-primary" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+          </div>
+        </a>
+      </div>
+      
+    </div>
+<div class="text-center mt-4 pt-2">
+      <a href="/uqeventhub/events/" class="btn btn-lg btn-uq-gold px-5">Explore more</a>
+    </div>
+    </div>
+  </main>
+
+
+  <footer class="bg-dark text-body-secondary py-5 mt-5">
+    <div class="container-xl">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="d-flex align-items-center gap-2 text-white fw-bold fs-5 mb-3">
+            <span class="brand-mark">
+              <i class="bi bi-calendar2-heart-fill text-primary fs-4" aria-hidden="true"></i>
+            </span>
+            UQ Event Hub
+          </div>
+          <p class="small text-white pe-md-5 mb-0">The official event management platform for the University of Queensland
+            community. Powered by students, for students.</p>
+        </div>
+        <div class="col-6 col-md-3">
+          <h2 class="text-warning text-uppercase small fw-bold letter-spacing-1 mb-3">Platform</h2>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="/uqeventhub/events/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Discover</a></li>
+            <li class="mb-2"><a href="/uqeventhub/hosts/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Hosts</a></li>
+            <li class="mb-2"><a href="/uqeventhub/login-staff/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Host login</a></li>
+            <li class="mb-2"><a href="/uqeventhub/login-user/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Sign in</a></li>
+            <li><a href="/uqeventhub/" class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Help Center</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-3">
+          <h2 class="text-warning text-uppercase small fw-bold letter-spacing-1 mb-3">Legal</h2>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="/uqeventhub/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Privacy Policy</a></li>
+            <li class="mb-2"><a href="/uqeventhub/"
+                class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Terms of Service</a></li>
+            <li><a href="/uqeventhub/" class="link-light link-underline-opacity-0 link-underline-opacity-100-hover">Cookie
+                Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="border-secondary mt-4 mb-0" />
+      <p class="small text-center text-secondary mb-0 pt-4">© 2026 The University of Queensland. All rights reserved.
+      </p>
+    </div>
+  </footer>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.8"></script>
+  
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var el = document.getElementById("filter-dates");
+      if (!el || typeof flatpickr === "undefined") return;
+      flatpickr(el, {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        showMonths: 1,
+        disableMobile: true,
+        allowInput: false,
+      });
+    });
+  </script>
+
+</body>
+</html>

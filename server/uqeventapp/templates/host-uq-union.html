@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+
+
+{% block title %}UQ Union - Host profile - UQ Event Hub{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content %}
+<main class="container-xl px-3 py-4 py-md-5">
+    <nav aria-label="Breadcrumb" class="mb-3">
+      <ol class="breadcrumb mb-0 small">
+        <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'hosts' %}">Hosts</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ host_profile.name|default:"Host" }}</li>
+      </ol>
+    </nav>
+
+    <header class="d-flex flex-column flex-md-row gap-4 align-items-start mb-5 pb-4 border-bottom">
+      <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0 fw-bold display-6"
+        style="width: 5.5rem; height: 5.5rem" aria-hidden="true">U</div>
+      <div>
+        <h1 class="fw-bold mb-2">{{ host_profile.name }}</h1>
+        <p class="lead text-secondary mb-3 mb-md-4">{{ host_profile.tagline|default:host_profile.description|truncatechars:220 }}</p>
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge rounded-pill bg-primary-subtle text-primary">{{ host_profile.status|title }}</span>
+          <span class="badge rounded-pill text-bg-secondary">Host</span>
+          {% if host_profile.website_url %}
+          <a class="badge rounded-pill text-decoration-none text-bg-light text-primary border"
+            href="{{ host_profile.website_url }}" rel="noopener noreferrer" target="_blank">{{ host_profile.website_url|cut:"https://"|cut:"http://" }} <i
+              class="bi bi-box-arrow-up-right small" aria-hidden="true"></i></a>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+    <section class="mb-5" aria-labelledby="host-about">
+      <h2 id="host-about" class="h5 fw-bold mb-3">About us</h2>
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <p class="text-secondary mb-3">{{ host_profile.description|default:"No host description yet." }}</p>
+          {% if host_profile.website_url %}
+          <p class="text-secondary mb-0">For official updates, see
+            <a href="{{ host_profile.website_url }}" rel="noopener noreferrer" target="_blank">{{ host_profile.website_url|cut:"https://"|cut:"http://" }}</a>.
+          </p>
+          {% endif %}
+        </div>
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm bg-body-tertiary h-100">
+            <div class="card-body">
+              <h3 class="h6 fw-bold mb-2">Official channels</h3>
+              <p class="small text-secondary mb-3">Public links configured for this host profile.</p>
+              <ul class="list-unstyled small mb-0">
+                {% for link in host_profile.official_links.all %}
+                <li class="mb-2"><a href="{{ link.url }}" rel="noopener noreferrer" target="_blank">{{ link.label }}</a></li>
+                {% empty %}
+                <li class="mb-0 text-secondary">No official links configured.</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-5" aria-labelledby="host-upcoming">
+      <h2 id="host-upcoming" class="h5 fw-bold mb-4">Upcoming events</h2>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+        {% for event in host_upcoming_events %}
+        <div class="col">
+          <a href="{% url 'event_detail' event.id %}" class="card h-100 shadow-sm text-decoration-none text-reset">
+            <img class="card-img-top object-fit-cover" src="{{ event.hero_image_url|default:'https://picsum.photos/seed/event/800/400' }}" alt="{{ event.title }}"
+              width="800" height="180" style="height: 10rem" referrerpolicy="no-referrer" />
+            <div class="card-body">
+              <h3 class="h6 card-title fw-bold">{{ event.title }}</h3>
+              <p class="card-text small text-secondary mb-0">{{ event.start_at|date:"D d M" }} · {% if event.venue_display %}{{ event.venue_display }}{% elif event.venue %}{{ event.venue.name }}{% else %}TBA{% endif %}</p>
+            </div>
+            <div class="card-footer bg-body-tertiary small text-secondary">{{ event.category.name|default:"General" }}</div>
+          </a>
+        </div>
+        {% empty %}
+        <div class="col-12"><div class="alert alert-secondary mb-0">No upcoming events for this host.</div></div>
+        {% endfor %}
+        <div class="col">
+          <a href="{% url 'events' %}" class="card h-100 shadow-sm text-decoration-none text-reset border-primary border-opacity-25">
+            <div class="card-body d-flex flex-column justify-content-center align-items-start py-5">
+              <i class="bi bi-grid-3x3-gap text-primary fs-2 mb-2" aria-hidden="true"></i>
+              <h3 class="h6 card-title fw-bold mb-1">Browse all events</h3>
+              <p class="card-text small text-secondary mb-0">Open the full catalogue on Discover.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="host-past">
+      <h2 id="host-past" class="h5 fw-bold mb-4">Past events</h2>
+      <div class="card border-0 shadow-sm">
+        <ul class="list-group list-group-flush">
+          {% for event in host_past_events %}
+          <li class="list-group-item d-flex flex-wrap justify-content-between gap-2 align-items-center py-3">
+            <div>
+              <span class="fw-semibold">{{ event.title }}</span>
+              <span class="text-secondary small d-block">{% if event.venue_display %}{{ event.venue_display }}{% elif event.venue %}{{ event.venue.name }}{% else %}TBA{% endif %}</span>
+            </div>
+            <span class="badge rounded-pill text-bg-secondary">{{ event.start_at|date:"M Y" }}</span>
+          </li>
+          {% empty %}
+          <li class="list-group-item py-3 text-secondary small">No past events yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  </main>
+{% endblock %}

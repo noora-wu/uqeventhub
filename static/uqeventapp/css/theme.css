@@ -1,0 +1,826 @@
+/**
+ * UQ Event Hub — theme on top of Bootstrap 5.
+ * Framework: https://getbootstrap.com/
+ * Colours: define once in :root, consume via var() below.
+ */
+:root {
+  /* —— Bootstrap overrides (keep names Bootstrap expects) —— */
+  --bs-primary: #51247a;
+  --bs-primary-rgb: 81, 36, 122;
+  --uq-purple-hover: #3a1a58;
+  --uq-purple-hover-rgb: 58, 26, 88;
+  /* BS 5.3+ anchors use --bs-link-color-rgb in rgba(); without it, links fall back to browser blue */
+  --bs-link-color: var(--bs-primary);
+  --bs-link-color-rgb: var(--bs-primary-rgb);
+  --bs-link-hover-color: var(--uq-purple-hover);
+  --bs-link-hover-color-rgb: var(--uq-purple-hover-rgb);
+  --bs-warning: #bb9d07;
+  --bs-warning-rgb: 187, 157, 7;
+
+  /* —— UQ brand tokens —— */
+  --uq-gold: #efc700;
+  --uq-gold-rgb: 239, 199, 0;
+
+  /* RGB building blocks (for rgba / gradients) */
+  --uq-white: #ffffff;
+  --uq-white-rgb: 255, 255, 255;
+  --uq-black-rgb: 0, 0, 0;
+  --uq-purple-deep-rgb: 20, 10, 40;
+
+  /* On-primary (white on purple sidebar / hero) */
+  --uq-on-primary-092: rgba(var(--uq-white-rgb), 0.92);
+  --uq-on-primary-075: rgba(var(--uq-white-rgb), 0.75);
+  --uq-on-primary-070: rgba(var(--uq-white-rgb), 0.7);
+  --uq-on-primary-012: rgba(var(--uq-white-rgb), 0.12);
+  --uq-on-primary-006: rgba(var(--uq-white-rgb), 0.06);
+
+  /* Shadows & overlays */
+  --uq-shadow-035: rgba(var(--uq-black-rgb), 0.35);
+  --uq-shadow-025: rgba(var(--uq-black-rgb), 0.25);
+  --uq-shadow-card: rgba(var(--uq-black-rgb), 0.08);
+
+  /* Hero video scrim & grid */
+  --uq-hero-scrim-a: rgba(var(--bs-primary-rgb), 0.94);
+  --uq-hero-scrim-b: rgba(var(--bs-primary-rgb), 0.72);
+  --uq-hero-scrim-c: rgba(var(--uq-purple-deep-rgb), 0.55);
+  --uq-hero-grid-line-a: rgba(var(--uq-white-rgb), 0.12);
+  --uq-hero-grid-line-b: rgba(var(--uq-white-rgb), 0.08);
+
+  /* Gold (warning) tints — eyebrow badge on hero */
+  --uq-gold-tint-bg: rgba(var(--bs-warning-rgb), 0.18);
+  --uq-gold-tint-border: rgba(var(--bs-warning-rgb), 0.45);
+
+  /* Primary tint — range picker, soft fills */
+  --uq-primary-soft: rgba(var(--bs-primary-rgb), 0.12);
+
+  /* Auth cards: default 28rem; add .uq-auth-card--wide on the card only for long forms (e.g. register-host). */
+  --uq-auth-card-max: 35rem;
+  --uq-auth-card-wide-max: 42rem;
+  --uq-auth-card-shadow: 0 0.75rem 2.5rem rgba(var(--bs-primary-rgb), 0.14);
+  --uq-auth-card-border: rgba(var(--bs-primary-rgb), 0.09);
+  --uq-github-bg: #24292f;
+  --uq-github-hover: #1c2127;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Breadcrumb: explicit purple (some builds ignore link RGB on .breadcrumb-item a) */
+.breadcrumb-item a {
+  color: var(--bs-primary);
+  text-decoration: none;
+}
+.breadcrumb-item a:hover {
+  color: var(--uq-purple-hover);
+  text-decoration: underline;
+}
+
+/* Discover / events grids — preview-only cards (no detail page link) */
+.uq-event-card--disabled {
+  opacity: 0.88;
+  cursor: not-allowed;
+  pointer-events: none;
+  user-select: none;
+}
+
+.uq-event-card--disabled .card-img-top {
+  filter: grayscale(0.28);
+}
+
+/* Public top navbar — taller bar (Bootstrap default is quite compact) */
+nav.navbar.navbar-expand-md.navbar-dark.bg-primary.shadow-sm.sticky-top[aria-label="Primary"] {
+  --bs-navbar-padding-y: 1.35rem;
+  min-height: 4.75rem;
+  align-items: center;
+}
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand-mark {
+  background: var(--uq-gold);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Event detail — long-form page; width follows .container-xl like index “Upcoming events” */
+
+.uq-event-detail-meta {
+  background: var(--bs-body-bg);
+}
+
+/* Event title row — meta pills (tokens: --uq-gold-tint-*, --uq-primary-soft; same family as .uq-hero__eyebrow) */
+.uq-event-meta-badge--gold {
+  color: var(--bs-primary);
+  background: var(--uq-gold-tint-bg);
+  border: 1px solid var(--uq-gold-tint-border);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.uq-event-meta-badge--purple {
+  color: var(--bs-primary);
+  background: var(--uq-primary-soft);
+  border: 1px solid rgba(var(--bs-primary-rgb), 0.22);
+  font-weight: 600;
+}
+.uq-event-meta-badge--gold-outline {
+  color: var(--bs-primary);
+  background: transparent;
+  border: 1px solid rgba(var(--uq-gold-rgb), 0.55);
+  font-weight: 600;
+}
+
+.uq-market-activity {
+  border-left: 4px solid var(--bs-primary);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.uq-market-activity:hover {
+  border-left-color: var(--uq-purple-hover);
+  box-shadow: 0 0.25rem 1rem var(--uq-shadow-card);
+}
+
+/* Event detail — embedded map (16:9, rounded) */
+.uq-map-embed {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 22rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0.25rem 1rem var(--uq-shadow-card);
+  background: var(--bs-secondary-bg);
+}
+.uq-map-embed iframe {
+  border: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Host profile teaser card (links to host page) */
+a.uq-host-card {
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+  border-color: rgba(var(--bs-primary-rgb), 0.12) !important;
+}
+a.uq-host-card:hover {
+  box-shadow: 0 0.5rem 1.5rem rgba(var(--bs-primary-rgb), 0.12);
+  border-color: rgba(var(--bs-primary-rgb), 0.28) !important;
+  transform: translateY(-1px);
+}
+a.uq-host-card .uq-host-card__cta {
+  pointer-events: none;
+}
+
+a.uq-host-directory-card:hover {
+  border-color: rgba(var(--bs-primary-rgb), 0.22) !important;
+  box-shadow: 0 0.5rem 1.25rem rgba(var(--bs-primary-rgb), 0.1);
+  transform: translateY(-1px);
+}
+
+/* Ticket and registration layout helpers */
+.uq-tickets-banner {
+  max-height: 14rem;
+}
+.uq-order-summary-card.sticky-lg-top {
+  top: 5.5rem;
+}
+
+.btn-uq-gold {
+  --bs-btn-color: var(--bs-primary);
+  --bs-btn-bg: var(--uq-gold);
+  --bs-btn-border-color: var(--uq-gold);
+  --bs-btn-hover-color: var(--bs-primary);
+  --bs-btn-hover-bg: var(--bs-warning);
+  --bs-btn-hover-border-color: var(--bs-warning);
+  font-weight: 700;
+}
+
+/* Soft gold outline — calmer than solid btn-uq-gold; pairs with UQ purple label text */
+.btn-outline-uq-gold {
+  --bs-btn-color: var(--bs-primary);
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: rgba(var(--uq-gold-rgb), 0.55);
+  --bs-btn-hover-color: var(--bs-primary);
+  --bs-btn-hover-bg: rgba(var(--uq-gold-rgb), 0.14);
+  --bs-btn-hover-border-color: rgba(var(--uq-gold-rgb), 0.9);
+  --bs-btn-focus-shadow: 0 0 0 0.25rem rgba(var(--uq-gold-rgb), 0.22);
+  --bs-btn-active-color: var(--bs-primary);
+  --bs-btn-active-bg: rgba(var(--uq-gold-rgb), 0.22);
+  --bs-btn-active-border-color: var(--uq-gold);
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(var(--uq-black-rgb), 0.08);
+  --bs-btn-disabled-color: var(--bs-secondary-color);
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: rgba(var(--uq-gold-rgb), 0.28);
+  font-weight: 600;
+}
+
+/* Create event form: sticky TOC sits below the page sticky header (not under it) */
+.uq-staff-page-header {
+  z-index: 1020;
+}
+
+.uq-create-event-toc {
+  position: sticky;
+  /* Clear breadcrumb + title bar (~5.5–6.5rem) + small gap */
+  top: 6.75rem;
+  z-index: 1010;
+}
+
+.uq-form-section-anchor {
+  scroll-margin-top: 7.5rem;
+}
+
+.uq-create-event-toc .uq-toc-link {
+  color: var(--bs-body-color);
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.uq-create-event-toc .uq-toc-link:hover {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-primary);
+}
+
+.uq-sidebar {
+  width: 16rem;
+}
+
+/* Staff portal: sidebar fixed full viewport height on large screens */
+@media (min-width: 992px) {
+  .uq-staff-layout .uq-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    min-height: 100vh;
+    z-index: 1020;
+    overflow-y: auto;
+  }
+
+  .uq-staff-layout > main {
+    margin-left: 16rem;
+    min-width: 0;
+  }
+}
+
+/* Staff portal: horizontal mobile nav + smoother table scroll */
+.uq-staff-mobile-nav {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.uq-staff-table-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+.uq-sidebar .nav-link {
+  color: var(--uq-on-primary-075);
+}
+
+.uq-sidebar .nav-link.active {
+  color: var(--uq-white) !important;
+  background-color: var(--uq-on-primary-012);
+  border-left: 3px solid var(--uq-gold);
+  padding-left: calc(0.75rem - 3px);
+}
+
+.uq-sidebar .nav-link:not(.active) {
+  color: var(--uq-on-primary-070);
+}
+
+.uq-sidebar .nav-link:not(.active):hover {
+  color: var(--uq-white);
+  background-color: var(--uq-on-primary-006);
+}
+
+a.card.text-reset:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem var(--uq-shadow-card) !important;
+}
+
+a.card.text-reset:hover .card-title {
+  color: var(--bs-primary);
+}
+
+.letter-spacing-1 {
+  letter-spacing: 0.12em;
+}
+
+/* —— Full-bleed hero (index) —— */
+.uq-hero {
+  --uq-hero-min-h: clamp(22rem, 56vh, 42rem);
+  min-height: var(--uq-hero-min-h);
+}
+
+.uq-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.uq-hero__iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 56.25vw;
+  min-width: 177.77vh;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+  border: 0;
+  pointer-events: none;
+}
+
+.uq-hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    118deg,
+    var(--uq-hero-scrim-a) 0%,
+    var(--uq-hero-scrim-b) 42%,
+    var(--uq-hero-scrim-c) 100%
+  );
+}
+
+.uq-hero__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.07;
+  background-image:
+    linear-gradient(var(--uq-hero-grid-line-a) 1px, transparent 1px),
+    linear-gradient(90deg, var(--uq-hero-grid-line-b) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+.uq-hero__inner {
+  z-index: 2;
+  /* Push hero copy lower than default — was feeling tight under the navbar */
+  padding-top: clamp(4rem, 11vh, 7.5rem);
+  padding-bottom: clamp(2.5rem, 5vh, 3.5rem);
+}
+
+.uq-hero__eyebrow {
+  color: var(--uq-gold);
+  background: var(--uq-gold-tint-bg);
+  border: 1px solid var(--uq-gold-tint-border);
+  letter-spacing: 0.04em;
+}
+
+.uq-hero__title {
+  text-shadow: 0 4px 32px var(--uq-shadow-035);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.uq-hero__lead {
+  max-width: 36rem;
+  text-shadow: 0 2px 16px var(--uq-shadow-025);
+  color: var(--uq-on-primary-092);
+}
+
+.uq-hero__credit {
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .uq-hero__inner {
+    animation: uq-hero-rise 0.85s ease-out both;
+  }
+}
+
+@keyframes uq-hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uq-hero__inner {
+    animation: none;
+  }
+}
+
+/* Recommendation and extensibility panels */
+.uq-planned-panel {
+  border: 1px dashed rgba(var(--bs-primary-rgb), 0.38);
+  background: rgba(var(--bs-primary-rgb), 0.045);
+}
+
+.uq-ai-assist-panel {
+  border: 1px solid rgba(var(--bs-primary-rgb), 0.2);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bs-primary-rgb), 0.07) 0%,
+    rgba(var(--bs-warning-rgb), 0.08) 100%
+  );
+}
+
+.uq-ai-assist-panel .accordion-button:not(.collapsed) {
+  background-color: rgba(var(--bs-primary-rgb), 0.08);
+  color: var(--bs-primary);
+}
+
+.uq-extensibility-strip {
+  border: 1px solid rgba(var(--bs-primary-rgb), 0.12);
+  background: var(--bs-body-bg);
+}
+
+/* Flatpickr (Discover page date range) — UQ primary */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.flatpickr-day.startRange.endRange {
+  border-radius: 0.25rem;
+}
+
+.flatpickr-day.inRange {
+  background: var(--uq-primary-soft);
+  border-color: transparent;
+  box-shadow: -2px 0 0 var(--uq-primary-soft), 2px 0 0 var(--uq-primary-soft);
+}
+
+/* —— Auth pages: centred card, soft page tint, OAuth buttons —— */
+body.uq-auth-page {
+  background: radial-gradient(120% 70% at 50% -15%, var(--uq-primary-soft), transparent 52%),
+    var(--bs-light);
+}
+
+.uq-auth-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: min(72vh, 38rem);
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+.uq-auth-card--wide {
+  max-width: var(--uq-auth-card-wide-max);
+}
+
+.uq-auth-card {
+  width: 100%;
+  max-width: var(--uq-auth-card-max);
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 1.125rem;
+  box-shadow: var(--uq-auth-card-shadow);
+  border: 1px solid var(--uq-auth-card-border);
+  overflow: hidden;
+}
+
+.uq-auth-card .card-header {
+  padding: 1.625rem 1.5rem;
+  border-bottom: 0;
+  background: linear-gradient(
+      125deg,
+      rgba(var(--uq-white-rgb), 0.16) 0%,
+      transparent 58%
+    ),
+    var(--bs-primary);
+}
+
+.uq-auth-card .card-body {
+  padding: 1.65rem 1.5rem;
+  background: var(--uq-white);
+}
+
+@media (min-width: 768px) {
+  .uq-auth-card .card-body {
+    padding: 2rem 2.25rem;
+  }
+}
+
+.uq-auth-card .form-control {
+  border-color: rgba(var(--bs-primary-rgb), 0.12);
+}
+
+.uq-auth-card .form-control:focus {
+  border-color: rgba(var(--bs-primary-rgb), 0.45);
+  box-shadow: 0 0 0 0.2rem var(--uq-primary-soft);
+}
+
+.uq-auth-oauth {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.uq-auth-oauth:hover {
+  transform: translateY(-1px);
+}
+
+.uq-auth-oauth:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+}
+
+.uq-auth-oauth--google {
+  color: var(--bs-body-color);
+  background: var(--uq-white);
+  border: 1px solid rgba(var(--uq-black-rgb), 0.1);
+  box-shadow: 0 0.15rem 0.35rem rgba(var(--uq-black-rgb), 0.06);
+}
+
+.uq-auth-oauth--google:hover {
+  background: #f8f9fa;
+  border-color: rgba(var(--uq-black-rgb), 0.16);
+  color: var(--bs-body-color);
+}
+
+.uq-auth-oauth--github {
+  color: var(--uq-white);
+  background: var(--uq-github-bg);
+  border: 1px solid var(--uq-github-bg);
+}
+
+.uq-auth-oauth--github:hover {
+  color: var(--uq-white);
+  background: var(--uq-github-hover);
+  border-color: var(--uq-github-hover);
+}
+
+.uq-auth-divider hr {
+  border: 0;
+  border-top: 1px solid rgba(var(--bs-primary-rgb), 0.12);
+  opacity: 1;
+}
+
+.uq-auth-divider span {
+  background: var(--uq-white);
+  padding: 0 0.75rem;
+}
+
+.uq-auth-link {
+  color: var(--bs-primary);
+  text-decoration: none;
+}
+
+.uq-auth-link:hover {
+  color: var(--uq-purple-hover);
+  text-decoration: underline;
+}
+
+.uq-auth-footnote {
+  color: var(--bs-secondary-color);
+}
+
+.uq-auth-footnote a {
+  color: var(--bs-primary);
+  text-decoration: none;
+}
+
+.uq-auth-footnote a:hover {
+  color: var(--uq-purple-hover);
+  text-decoration: underline;
+}
+
+/* —— Events page: browse-by-date calendar —— */
+#browse-by-date,
+#event-catalog {
+  scroll-margin-top: 5.5rem;
+}
+
+.uq-cal-shell {
+  background:
+    linear-gradient(145deg, rgba(var(--bs-primary-rgb), 0.06) 0%, transparent 55%),
+    linear-gradient(320deg, rgba(var(--bs-warning-rgb), 0.08) 0%, transparent 45%);
+  position: relative;
+}
+
+.uq-cal-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bs-primary-rgb), 0.35),
+    rgba(var(--bs-warning-rgb), 0.25),
+    rgba(var(--bs-primary-rgb), 0.2)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.uq-cal-head {
+  background: linear-gradient(
+    125deg,
+    rgba(var(--bs-primary-rgb), 1) 0%,
+    rgba(var(--bs-primary-rgb), 0.88) 42%,
+    rgba(45, 20, 85, 0.95) 100%
+  );
+  box-shadow: inset 0 -1px 0 rgba(var(--uq-white-rgb), 0.12);
+}
+
+.uq-cal-head-lead {
+  color: rgba(var(--uq-white-rgb), 0.82);
+  max-width: 36rem;
+}
+
+.uq-cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.uq-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+}
+
+@media (min-width: 768px) {
+  .uq-cal-grid {
+    gap: 0.5rem;
+  }
+}
+
+.uq-cal-day {
+  position: relative;
+  width: 100%;
+  min-height: 4.25rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(var(--bs-primary-rgb), 0.08);
+  background: rgba(var(--uq-white-rgb), 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0.35rem 0.4rem;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  appearance: none;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+  font: inherit;
+  cursor: default;
+}
+
+@media (min-width: 768px) {
+  .uq-cal-day {
+    min-height: 5.5rem;
+    padding: 0.5rem 0.55rem;
+  }
+}
+
+.uq-cal-day--outside {
+  opacity: 0.38;
+  background: rgba(var(--uq-black-rgb), 0.02);
+}
+
+.uq-cal-day--detail {
+  border-color: rgba(var(--bs-primary-rgb), 0.35);
+  background: linear-gradient(
+    160deg,
+    rgba(var(--bs-primary-rgb), 0.1) 0%,
+    rgba(var(--uq-white-rgb), 0.98) 55%
+  );
+  cursor: pointer;
+}
+
+.uq-cal-day--listing {
+  border-color: rgba(var(--uq-gold-rgb), 0.42);
+  background: linear-gradient(
+    168deg,
+    rgba(var(--uq-gold-rgb), 0.26) 0%,
+    rgba(var(--uq-gold-rgb), 0.1) 38%,
+    rgba(var(--uq-white-rgb), 0.99) 72%
+  );
+  cursor: pointer;
+}
+
+a.uq-cal-day--detail:hover,
+button.uq-cal-day--detail:hover,
+button.uq-cal-day--listing:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1.25rem rgba(var(--bs-primary-rgb), 0.15);
+  border-color: rgba(var(--bs-primary-rgb), 0.45);
+}
+
+button.uq-cal-day--listing:hover {
+  box-shadow: 0 0.55rem 1.35rem rgba(var(--uq-gold-rgb), 0.28);
+  border-color: rgba(var(--uq-gold-rgb), 0.58);
+}
+
+.uq-cal-day--today {
+  box-shadow: 0 0 0 2px rgba(var(--uq-gold-rgb), 0.72);
+}
+
+.uq-cal-day__num {
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--bs-secondary-color);
+  line-height: 1;
+}
+
+.uq-cal-day--detail .uq-cal-day__num,
+.uq-cal-day--listing .uq-cal-day__num {
+  color: var(--bs-primary);
+}
+
+.uq-cal-day__title {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-top: 0.2rem;
+  color: var(--bs-primary);
+}
+
+@media (min-width: 768px) {
+  .uq-cal-day__title {
+    font-size: 0.78rem;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+  }
+}
+
+.uq-cal-day__go {
+  position: absolute;
+  right: 0.35rem;
+  bottom: 0.3rem;
+  font-size: 0.85rem;
+  color: rgba(var(--bs-primary-rgb), 0.55);
+}
+
+a.uq-cal-day--detail:hover .uq-cal-day__go {
+  color: var(--bs-primary);
+}
+
+.uq-cal-day__dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  margin-top: 0.25rem;
+}
+
+.uq-cal-dot {
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: var(--bs-primary);
+  opacity: 0.55;
+}
+
+.uq-cal-day__hint {
+  margin-top: auto;
+  color: var(--bs-secondary-color);
+  line-height: 1.1;
+}
+
+.uq-cal-legend {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 0.15rem;
+  flex-shrink: 0;
+}
+
+.uq-cal-legend--detail {
+  background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.35), rgba(var(--bs-primary-rgb), 0.12));
+  border: 1px solid rgba(var(--bs-primary-rgb), 0.35);
+}
+
+.uq-cal-legend--listing {
+  background: linear-gradient(135deg, rgba(var(--uq-gold-rgb), 0.45), rgba(var(--uq-gold-rgb), 0.12));
+  border: 1px solid rgba(var(--uq-gold-rgb), 0.48);
+}

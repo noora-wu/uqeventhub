@@ -1,0 +1,1 @@
+{# Suppress allauth default flash; renders empty. #}
